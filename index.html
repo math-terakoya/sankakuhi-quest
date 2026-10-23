@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:;">
-<title>三角比クエスト ～数学Ⅰの章～</title>
+<title>三角比クエストⅡ（三角比の拡張）</title>
 <style>
   /* ===================== レトロRPG風CSS（単位円クエストと共通） ===================== */
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
@@ -163,6 +163,11 @@ min-height: 44px; touch-action: manipulation;
 .fr > .nu { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; }
 .fr > .de { padding: 1px 3px 0; }
 .rt { white-space: nowrap; }
+.bar { display: inline-block; width: 1.9em; height: 6px; border-radius: 2px; vertical-align: middle; margin: 3px 1px; }
+.bar.o { background: #ff9f43; }
+.bar.b { background: #4f8dff; }
+#defPoints .defr { font-family: 'Times New Roman', 'Hiragino Mincho ProN', serif; font-size: 16px; margin-top: 4px; }
+#defPoints .fr { font-size: 0.82em; }
 .rad { border-top: 1.5px solid currentColor; padding: 0 1px; margin-left: -1px; }
 /* — チュートリアルの指 — */
 /* 輪の中心が left/top（点の位置）に来て、指と文字はその下 */
@@ -286,13 +291,13 @@ padding: 14px 0; text-shadow: 3px 3px 0 #400; animation: warn 2s forwards;
 
   <div class="overlay" id="titleScreen">
     <div class="hero">🔺</div>
-    <h1>三角比<br>クエスト</h1>
-    <p class="sub">～数学Ⅰの章～</p>
+    <h1>三角比<br>クエストⅡ</h1>
+    <p class="sub">～三角比の拡張（0° ≦ θ ≦ 180°）～</p>
     <p class="comp hidden" id="compTitle"></p>
     <p style="margin-top:20px;">はんえんの ばしょを みきわめ<br>モンスターを うちたおせ！</p>
     <button class="start-btn" id="startBtn">▶ はじめる</button>
     <button class="how-btn" id="howBtn">？ あそびかた</button>
-    <p class="sub" style="margin-top:20px;font-size:10px;">9つの 章（どこからでも）→ さいごの 章<br>モンスターずかんを うめよう</p>
+    <p class="sub" style="margin-top:20px;font-size:10px;">8つの 章（どこからでも）→ さいごの 章<br>モンスターずかんを うめよう</p>
     <p class="sub" style="margin-top:14px;font-size:9px;opacity:0.7;">© 2026 math-terakoya　CC BY-NC-SA 4.0</p>
   </div>
 
@@ -300,14 +305,28 @@ padding: 14px 0; text-shadow: 3px 3px 0 #400; animation: warn 2s forwards;
     <div class="hero">🎯</div>
     <h1>れんしゅう<br>クリア！</h1>
     <div class="points">
-      <div>・<b>sin ＝ 向かい ÷ 斜辺</b>、cos ＝ となり ÷ 斜辺、tan ＝ 向かい ÷ となり</div>
+      <div>・<b>sinθ ＝ <span class="fr"><span class="nu">向かいの 辺</span><span class="de">斜辺</span></span></b>、cosθ ＝ <span class="fr"><span class="nu">となりの 辺</span><span class="de">斜辺</span></span>、tanθ ＝ <span class="fr"><span class="nu">向かいの 辺</span><span class="de">となりの 辺</span></span></div>
       <div>・角は x軸の 正の 向きから <b>左まわり</b>。動径は 原点からの 線の どこを タップ しても よい</div>
-      <div>・<b>cos は x座標</b>、<b>sin は y座標</b>、tan は y ÷ x</div>
+      <div>・<b>cos は x座標</b>、<b>sin は y座標</b>、tan は <span class="fr"><span class="nu">y</span><span class="de">x</span></span></div>
       <div>・sin の 値から θ は <b>2つ</b>、cos・tan からは <b>1つ</b></div>
       <div>・≦ ≧ は イコール あり → <b>●</b></div>
       <div>・＜ ＞ は イコール なし → <b>○</b></div>
     </div>
     <button class="start-btn" id="goBtn">▶ しょうえらびへ</button>
+  </div>
+
+  <div class="overlay hidden" id="defScreen">
+    <h1 style="font-size:20px;margin-bottom:8px;">直角三角形の 三角比</h1>
+    <svg viewBox="0 0 330 150" width="300" height="150" style="display:block;margin:0 auto 6px;max-width:100%"><polygon points="30,125 220,125 220,25" fill="none" stroke="#fff" stroke-width="2.5"/><polyline points="208,125 208,113 220,113" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M 62 125 A 32 32 0 0 0 58.4 110.3" fill="none" stroke="#ffd84a" stroke-width="2"/><text x="70" y="118" fill="#ffd84a" font-size="16" font-family="serif" font-weight="bold">θ</text><text x="112" y="66" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle" transform="rotate(-28 112 66)">斜辺</text><text x="228" y="80" fill="#ff9f43" font-size="14" font-weight="bold">向かいの 辺</text><text x="125" y="144" fill="#4f8dff" font-size="14" font-weight="bold" text-anchor="middle">となりの 辺</text></svg>
+    <div class="points" id="defPoints">
+      <div>・<b>斜辺</b>：直角の 向かいの 辺（いちばん 長い）</div>
+      <div>・<b style="color:#ff9f43">向かいの 辺</b>：θ に ふれない 辺</div>
+      <div>・<b style="color:#4f8dff">となりの 辺</b>：θ と 直角を むすぶ 辺</div>
+      <div class="defr">sinθ ＝ <span class="fr"><span class="nu">向かいの 辺</span><span class="de">斜辺</span></span></div>
+      <div class="defr">cosθ ＝ <span class="fr"><span class="nu">となりの 辺</span><span class="de">斜辺</span></span></div>
+      <div class="defr">tanθ ＝ <span class="fr"><span class="nu">向かいの 辺</span><span class="de">となりの 辺</span></span></div>
+    </div>
+    <button class="start-btn" id="defClose">▶ たたかう</button>
   </div>
 
   <div class="overlay hidden" id="ruleScreen">
@@ -318,10 +337,11 @@ padding: 14px 0; text-shadow: 3px 3px 0 #400; animation: warn 2s forwards;
       <div>・θ は、x軸の 正の 向きから 左まわりに はかった 角（0° ≦ θ ≦ 180°）</div>
       <div>・動径は、原点からの 線の どこを タップしても えらべる</div>
       <div>・「θ の 点」は、θ の 動径と 半径 1 の 半円の 交わる 点</div>
-      <div>・点の 座標は（cosθ, sinθ）、tanθ ＝ sinθ ÷ cosθ</div>
+      <div>・点の 座標は（cosθ, sinθ）、tanθ ＝ <span class="fr"><span class="nu">sinθ</span><span class="de">cosθ</span></span></div>
       <div>・点線は 補助線 x ＝ ±1/2、y ＝ 1/2</div>
-      <div>・第9章の 図は 正確な 大きさ では ない</div>
+      <div>・第8章の 図は 正確な 大きさ では ない</div>
     </div>
+    <button class="how-btn" id="ruleDef">📐 直角三角形の 三角比（定義）</button>
     <button class="start-btn" id="ruleClose">▶ もどる</button>
   </div>
 
@@ -505,7 +525,7 @@ const pm = (n, d) => '±' + frac(Math.abs(n), d);
 function remLegs(m) { const [a, b, c] = TRIPLES[m.t]; return m.w ? { y: b, x: a, c } : { y: a, x: b, c }; }   // y：sin の 分子、x：|cos| の 分子
 const INFO = { acute: '鋭角', obtuse: '鈍角' };
 
-// ---------- 第9章 はかる ----------
+// ---------- 第8章 はかる ----------
 const MOVES = {   // 目線を 変える：木 8 m、10 m はなれて 立つ（目の 高さ 1.5 m）
   crouch: { e: 0.5, d: 10, s: 'しゃがむ（目の 高さ 0.5 m）', se: 'しゃがんで 目の 高さを 0.5 m に すると' },
   floor2: { e: 4.5, d: 10, s: '2階の 窓から 見る（目の 高さ 4.5 m）', se: '2階の 窓（目の 高さ 4.5 m）から 見ると' },
@@ -570,32 +590,37 @@ const TRI_ORIENT = rng => ({ rot: ri(rng, 0, 3), flip: ri(rng, 0, 1) });
 const REV = ['posR', 'coord', 'eqR', 'ineqR'];   // 図 → 式（逆向き）
 const TAP = ['triSide', 'posA', 'posO', 'eqSin', 'eqCos', 'eqTan', 'ineqSin', 'ineqCos'];   // 図を タップして 答える
 const RADIUS = ['posA', 'posO'];   // 動径を えらぶ（原点から 周までの 線の どこを タップ しても よい）
-// 2026-10-24：第1章「直角三角形」を 前に 足した（もとの 第1〜8章は 第2〜9章）。角の いちの 章の はじめは つなぎ（bridge）
+// 2026-10-24：直角三角形は 三角比クエストⅠ（前半）へ。この ゲーム（Ⅱ・三角比の 拡張）は 角の いち（はじめは つなぎ bridge）〜 はかる ＋ さいごの 章
 const CHAPTERS = [
-  // 第1章の 中心は triPick（色を つけた 2辺の 比 → sin・cos・tan）。ザコの 大半と ボスの 多くを この 形に
-  { ch: 1, lv: 1, title: '第1章 直角三角形', forms: ['triPick', 'triSide', 'triVal', 'triJogi'], zako: ['triPick', 'triPick', 'triPick', 'triPick', 'triSide', 'triVal', 'triJogi'],
-    pool: ['triPick', 'triPick', 'triPick', 'triSide', 'triVal', 'triJogi'], boss: { name: 'サンペンオウ', sprite: '🗿' } },
-  { ch: 2, lv: 2, title: '第2章 角の いち', forms: ['bridge', 'posA', 'posO', 'posR'], first: 'bridge', boss: { name: 'オオメグリ', sprite: '🌪️' } },
-  { ch: 3, lv: 3, title: '第3章 あたい', forms: ['valSin', 'valCos', 'valTan', 'coord'], boss: { name: 'ザヒョウオウ', sprite: '🏯' } },
-  { ch: 4, lv: 4, title: '第4章 ＋ と −', forms: ['signAt', 'signQ', 'signAxis'], boss: { name: 'フゴウノカミ', sprite: '⚖️' } },
-  { ch: 5, lv: 5, title: '第5章 180° − θ・90° − θ', forms: ['sup', 'comp', 'formula'], boss: { name: 'カガミオウ', sprite: '🏛️' } },
-  { ch: 6, lv: 6, title: '第6章 方程式', forms: ['eqSin', 'eqCos', 'eqTan', 'eqR'], boss: { name: 'フタゴノヌシ', sprite: '🎎' } },
-  { ch: 7, lv: 7, title: '第7章 不等式', forms: ['ineqSin', 'ineqCos', 'ineqR'], boss: { name: 'ハンゲツオウ', sprite: '🌘' } },
-  { ch: 8, lv: 8, title: '第8章 のこり2つ', forms: ['remSin', 'remCos', 'remTanG', 'remTan'], boss: { name: 'ソウカンオウ', sprite: '🔗' } },
-  { ch: 9, lv: 9, title: '第9章 はかる', forms: ['tree', 'eye', 'eyeMove', 'slope', 'depAng', 'depLen'], boss: { name: 'ハカリオウ', sprite: '🔭' } },
-  { ch: 10, final: true, title: 'さいごの 章', boss: { name: 'サンカクオウ', sprite: '🔺' } },
+  { ch: 1, lv: 1, title: '第1章 角の いち', forms: ['bridge', 'posA', 'posO', 'posR'], first: 'bridge', boss: { name: 'オオメグリ', sprite: '🌪️' } },
+  { ch: 2, lv: 2, title: '第2章 あたい', forms: ['valSin', 'valCos', 'valTan', 'coord'], boss: { name: 'ザヒョウオウ', sprite: '🏯' } },
+  { ch: 3, lv: 3, title: '第3章 ＋ と −', forms: ['signAt', 'signQ', 'signAxis'], boss: { name: 'フゴウノカミ', sprite: '⚖️' } },
+  { ch: 4, lv: 4, title: '第4章 180° − θ・90° − θ', forms: ['sup', 'comp', 'formula'], boss: { name: 'カガミオウ', sprite: '🏛️' } },
+  { ch: 5, lv: 5, title: '第5章 方程式', forms: ['eqSin', 'eqCos', 'eqTan', 'eqR'], boss: { name: 'フタゴノヌシ', sprite: '🎎' } },
+  { ch: 6, lv: 6, title: '第6章 不等式', forms: ['ineqSin', 'ineqCos', 'ineqR'], boss: { name: 'ハンゲツオウ', sprite: '🌘' } },
+  { ch: 7, lv: 7, title: '第7章 のこり2つ', forms: ['remSin', 'remCos', 'remTanG', 'remTan'], boss: { name: 'ソウカンオウ', sprite: '🔗' } },
+  { ch: 8, lv: 8, title: '第8章 はかる', forms: ['tree', 'eye', 'eyeMove', 'slope', 'depAng', 'depLen'], boss: { name: 'ハカリオウ', sprite: '🔭' } },
+  { ch: 9, final: true, title: 'さいごの 章', boss: { name: 'サンカクオウ', sprite: '🔺' } },
 ];
-// 前の 版（第1章 直角三角形 を 足す まえ）の 記録を 引きつぐ：章 k → k ＋ 1、図鑑の 中ボス boss k → boss k ＋ 1
-const DATA_V = 2;
+// 記録の 版：印 なし ＝ 10/23 の 版（いまと 同じ 章の 番号）、2 ＝ 10/24 の 一時の 版（第1章 直角三角形 が あり、章が 1つ ずれて いた）、3 ＝ いま
+// 2 の 記録は 章を 1つ もどし（第1章 直角三角形 の 分は すてる）、図鑑の 直角三角形の モンスターと その 中ボス（boss1）を はずす
+const DATA_V = 3;
+const OLD_TRI = ['triPick', 'triSide', 'triVal', 'triJogi'];
 function migrateProg(pr) {
   if (!pr || pr.v >= DATA_V) return pr;
-  const sh = o => { const r = {}; Object.keys(o || {}).forEach(k => { r[+k + 1] = o[k]; }); return r; };
+  if (pr.v !== 2) return Object.assign({}, pr, { v: DATA_V });
+  const sh = o => { const r = {}; Object.keys(o || {}).forEach(k => { if (+k > 1) r[+k - 1] = o[k]; }); return r; };
   return Object.assign({}, pr, { cur: sh(pr.cur), stars: sh(pr.stars), v: DATA_V });
 }
 function migrateZk(zk) {
   if (!zk || zk._v >= DATA_V) return zk;
   const r = { _v: DATA_V };
-  Object.keys(zk).forEach(k => { const m = /^boss(\d+)$/.exec(k); r[m ? 'boss' + (+m[1] + 1) : k] = zk[k]; });
+  Object.keys(zk).forEach(k => {
+    if (k === '_v') return;
+    if (zk._v !== 2) { r[k] = zk[k]; return; }
+    if (OLD_TRI.includes(k) || k === 'boss1') return;
+    const m = /^boss(\d+)$/.exec(k); r[m ? 'boss' + (+m[1] - 1) : k] = zk[k];
+  });
   return r;
 }
 const NORM_CH = CHAPTERS.filter(c => !c.final);
@@ -603,17 +628,13 @@ const FORM_LV = {};
 NORM_CH.forEach(c => c.forms.forEach(f => { FORM_LV[f] = c.lv; }));
 // モンスター図鑑：形ごとに 1匹 ＋ 中ボス ＋ さいごの ボス。一言は その 形の 判断の 要点
 const MONSTERS = [
-  ['triPick', 'イロワケ', '🎨', '向かい ÷ 斜辺 は sin、となり ÷ 斜辺 は cos、向かい ÷ となり は tan'],
-  ['triSide', 'ヘンサガシ', '🧐', '斜辺は 直角の 向かい、向かいの 辺は θ に ふれない 辺'],
-  ['triVal', 'サンヨンゴ', '🧱', '3・4・5 なら 斜辺は 5。分母と 分子を 取りちがえない'],
-  ['triJogi', 'ジョウギ', '✏️', '三角定規の 辺は 1・2・√3 と 1・1・√2'],
   ['bridge', 'ツナギメ', '🌉', '斜辺 1 を 原点に 置くと、となりは x（cos）、向かいは y（sin）'],
   ['posA', 'ヒダリマワリ', '🌀', '角は x軸の 正の 向きから 左まわりに はかる'],
   ['posO', 'カクモドリ', '↩️', '鈍角は 180° から もどる（150° ＝ 180° − 30°）'],
   ['posR', 'カクヨミ', '📍', '45° の 動径は 補助線の 交点 (1/2, 1/2) を 通る'],
   ['valSin', 'タテノビ', '🦒', 'sin は 点の y座標（高さ）'],
   ['valCos', 'ヨコノビ', '🐍', 'cos は 点の x座標（左がわは 負）'],
-  ['valTan', 'カタムキ', '📐', 'tan は y ÷ x。90° の tan は ない'],
+  ['valTan', 'カタムキ', '📐', 'tanθ ＝ {y|x}。90° の tan は ない'],
   ['coord', 'ザヒョウ', '🗺️', '点の 座標は (cosθ, sinθ)'],
   ['signAt', 'ウラオモテ', '🎭', '鈍角では cos と tan が 負'],
   ['signQ', 'エイドン', '⚔️', '鋭角は 3つ とも 正、鈍角は sin だけ 正'],
@@ -631,7 +652,7 @@ const MONSTERS = [
   ['remSin', 'カタワレ', '🧩', 'sin から cos は ±（鋭角か 鈍角かで 決まる）'],
   ['remCos', 'ヒトツダケ', '☝️', 'cos から sin は 1つ（sin は 負に ならない）'],
   ['remTanG', 'カタムキミ', '🧭', 'tan が 負 → 鈍角 → cos も 負'],
-  ['remTan', 'ワリザン', '➗', 'tanθ ＝ sinθ ÷ cosθ'],
+  ['remTan', 'ブンスウ', '🍰', 'tanθ ＝ {sinθ|cosθ}'],
   ['tree', 'キノッポ', '🌲', '向かいの 辺 ＝ となりの 辺 × tan'],
   ['eye', 'メノタカサ', '👀', '地面からの 高さは 目の 高さを 足す'],
   ['eyeMove', 'シャガミ', '🧎', '目が 低いほど、木に 近いほど 仰角は 大きい'],
@@ -640,7 +661,7 @@ const MONSTERS = [
   ['depLen', 'ガケノウエ', '🏔️', '俯角を 錯角で 船の 角に うつして tan'],
 ].map(([id, name, sprite, tip]) => ({ id, ch: FORM_LV[id], name, sprite, tip }))
   .concat(NORM_CH.map(c => ({ id: 'boss' + c.ch, ch: c.ch, name: c.boss.name, sprite: c.boss.sprite, tip: '中ボス：' + c.title.replace(/^第\d章 /, '') + 'を 問題集の ことばで', boss: true })))
-  .concat([{ id: 'final', ch: CHAPTERS.length, name: CHAPTERS[CHAPTERS.length - 1].boss.name, sprite: CHAPTERS[CHAPTERS.length - 1].boss.sprite, tip: 'さいごの ボス：9つの 章を 問題集の ことばで', boss: true }]);
+  .concat([{ id: 'final', ch: CHAPTERS.length, name: CHAPTERS[CHAPTERS.length - 1].boss.name, sprite: CHAPTERS[CHAPTERS.length - 1].boss.sprite, tip: 'さいごの ボス：' + NORM_CH.length + 'つの 章を 問題集の ことばで', boss: true }]);
 const monsterOf = id => MONSTERS.find(m => m.id === id);
 // 図鑑の 印：1 ＝ ○（たおした）、2 ＝ ◎（ザコは 苦手を こくふく、ボスは ノーミスで たおした）
 function zukanAfter(zk, e) {
@@ -712,7 +733,7 @@ function makeOptions(q, rng, boss) {
   const add = (text, key, types) => c.push({ text, key: String(key), types });
   const m = q.mode;
   let fixed = false;
-  if (m === 'triPick') {   // オレンジ ÷ 青 → sinθ・cosθ・tanθ と 正解の 逆数
+  if (m === 'triPick') {   // 比 オレンジの 辺/青の 辺 → sinθ・cosθ・tanθ と 正解の 逆数
     const right = Object.keys(RATIO).find(f => sideName(q.num) === RATIO[f][0] && sideName(q.den) === RATIO[f][1]);
     ['sin', 'cos', 'tan'].forEach(f => add(f + 'θ', f, f === right ? [] : ['ratio']));
     add('{1|' + right + 'θ}', 'inv', ['flip']);
@@ -874,7 +895,7 @@ function moveAns(mv) {   // 0：大きく、1：小さく、3：俯角
 function texts(q) {
   const m = q.mode;
   const L = {
-    triPick: () => [['▼ 2辺の 比は？', 'オレンジ ÷ 青 は どれ？'], ['図の 直角三角形で、太線の 2辺の 比（オレンジ ÷ 青）を、角 θ の 三角比で 表せ。']],
+    triPick: () => [['▼ 2辺の 比は？', '比 {[O]|[B]} は どれ？'], ['図の 直角三角形で、太線の 2辺の 比 {[O]|[B]} を、角 θ の 三角比で 表せ。']],
     triSide: () => {
       const T = { hyp: ['斜辺は どれ？', '図の 直角三角形で、斜辺を 選べ。'], opp: ['θ の 向かいの 辺は どれ？', '図の 直角三角形で、角 θ の 対辺を 選べ。'],
         adj: ['θ の となりの 辺は どれ？（斜辺で ない ほう）', '図の 直角三角形で、角 θ を はさむ 辺の うち、斜辺で ない 辺を 選べ。'] }[q.ask];
@@ -960,15 +981,15 @@ function reasonLines(q) {
   const push = s => { if (s) L.push(s); };
   if (m === 'triPick') {
     const n = sideName(q.num), d = sideName(q.den), f = Object.keys(RATIO).find(k => RATIO[k][0] === n && RATIO[k][1] === d);
-    L.push('オレンジは ' + SIDE_JP[n] + '、青は ' + SIDE_JP[d] + ' → ' + SIDE_JP[n].replace('の 辺', '') + ' ÷ ' + SIDE_JP[d].replace('の 辺', '') + ' ＝ ' + f + 'θ');
+    L.push('オレンジは ' + SIDE_JP[n] + '、青は ' + SIDE_JP[d] + ' → {' + SIDE_JP[n].replace('の 辺', '') + '|' + SIDE_JP[d].replace('の 辺', '') + '} ＝ ' + f + 'θ');
     L.push('斜辺は 直角の 向かい、向かいの 辺は θ に ふれない 辺');
-    L.push('sin ＝ 向かい ÷ 斜辺、cos ＝ となり ÷ 斜辺、tan ＝ 向かい ÷ となり');
+    L.push('sinθ ＝ {向かい|斜辺}、cosθ ＝ {となり|斜辺}、tanθ ＝ {向かい|となり}');
   }
   if (m === 'triSide') { L.push('斜辺は 直角の 向かいの 辺（いちばん 長い）'); L.push('向かいの 辺は θ に ふれない 辺、となりの 辺は θ と 直角を むすぶ 辺'); }
   if (m === 'triVal' || m === 'triJogi') {
     const [[a], [o], [hy]] = triLens(q), A = m === 'triJogi' ? angStr(q.a) : 'θ';
     L.push(A + ' の 向かいの 辺 ' + o + '、となりの 辺 ' + a + '、斜辺 ' + hy);
-    L.push('sin ＝ 向かい ÷ 斜辺、cos ＝ となり ÷ 斜辺、tan ＝ 向かい ÷ となり');
+    L.push('sinθ ＝ {向かい|斜辺}、cosθ ＝ {となり|斜辺}、tanθ ＝ {向かい|となり}');
     if (m === 'triJogi') L.push('→ ' + fnAt(q.fn, q.a) + ' ＝ ' + makeOptionsCorrect(q));
     else L.push('→ ' + ['sin', 'cos', 'tan'].map(f => f + 'θ ＝ ' + makeOptionsCorrect(Object.assign({}, q, { fn: f }))).join('、'));
   }
@@ -981,12 +1002,12 @@ function reasonLines(q) {
   if (m === 'valSin' || m === 'valCos' || m === 'valTan' || m === 'coord') {
     L.push(angStr(q.u) + ' の 点は ' + coordStr(q.u));
     if (m === 'coord') L.push('x座標が cos、y座標が sin');
-    else if (q.fn === 'tan') L.push(q.u === 6 ? 'tan は y ÷ x。x ＝ 0 で わり算が できない → tan 90° は ない' : 'tan は y ÷ x → ' + fnAt('tan', q.u) + ' ＝ ' + vStr('tan', tanV(q.u)));
+    else if (q.fn === 'tan') L.push(q.u === 6 ? 'tanθ ＝ {y|x}。x ＝ 0 で 分母が 0 → tan 90° は ない' : 'tanθ ＝ {y|x} → ' + fnAt('tan', q.u) + ' ＝ ' + vStr('tan', tanV(q.u)));
     else L.push(q.fn + ' は ' + (q.fn === 'sin' ? 'y' : 'x') + '座標 → ' + fnAt(q.fn, q.u) + ' ＝ ' + vStr(q.fn, valOf(q.fn, q.u)));
   }
   if (m === 'signAt' || m === 'signQ' || m === 'signAxis') {
     const u = signU(q), s = signOf(q.fn, u);
-    L.push('cos は x座標、sin は y座標、tan は y ÷ x');
+    L.push('cos は x座標、sin は y座標、tan は {y|x}');
     if (m === 'signQ') L.push(QTXT[q.q]);
     else if (m === 'signAt') L.push(angStr(q.u) + ' は ' + (q.u < 6 ? '鋭角' : '鈍角') + ' → ' + QTXT[q.u < 6 ? 'acute' : 'obtuse']);
     else L.push(angStr(q.u) + ' の 点は ' + coordStr(q.u) + '（軸の 上）');
@@ -1006,7 +1027,7 @@ function reasonLines(q) {
   if (m === 'formula') {
     if (q.f.endsWith('180')) L.push('180° − θ の 点は θ の 点と y軸に ついて 対称 → y座標は 同じ、x座標は 符号が 逆');
     else L.push('90° − θ の 点は θ の 点と 直線 y ＝ x に ついて 対称 → x座標と y座標が 入れかわる');
-    if (q.f[0] === 't') L.push('tan は y ÷ x で 考える');
+    if (q.f[0] === 't') L.push('tan は {y|x} で 考える');
     L.push('→ ' + FORMULA_L[q.f] + ' ＝ ' + makeOptionsCorrect(q));
   }
   if (m === 'eqSin' || m === 'eqCos' || m === 'eqTan') {
@@ -1046,10 +1067,10 @@ function reasonLines(q) {
   }
   if (m === 'remTan') {
     const { y, x } = remLegs(q), s = q.info === 'obtuse' ? -1 : 1;
-    L.push('tanθ ＝ sinθ ÷ cosθ（分母は cos）→ tanθ ＝ ' + frac(s * y, x));
+    L.push('tanθ ＝ {sinθ|cosθ}（分母は cos）→ tanθ ＝ ' + frac(s * y, x));
     if (s < 0) L.push('鈍角 → tanθ は 負');
   }
-  if (m === 'tree') { L.push('木の 高さ x は 仰角の 向かいの 辺、' + q.d + ' m は となりの 辺（斜辺は わからない）'); L.push('tan ＝（向かい）÷（となり）→ x ＝ ' + q.d + ' ' + tri('tan', q.a)); }
+  if (m === 'tree') { L.push('木の 高さ x は 仰角の 向かいの 辺、' + q.d + ' m は となりの 辺（斜辺は わからない）'); L.push('tan ＝ {向かい|となり} → x ＝ ' + q.d + ' ' + tri('tan', q.a)); }
   if (m === 'eye') { L.push('目の 高さから 上は ' + q.d + ' ' + tri('tan', q.a)); L.push('地面からは 目の 高さ ' + mf(q.h) + ' m を 足す → x ＝ ' + q.d + ' ' + tri('tan', q.a) + ' ＋ ' + mf(q.h)); }
   if (m === 'eyeMove' && q.k === 'q') {
     const M = MOVES[q.mv], r = moveAns(q.mv);
@@ -1134,12 +1155,12 @@ function classify(p, ans) {
   return { types: t };
 }
 const TYPE_TEXT = {
-  ratio: 'どの 辺 ÷ どの 辺 か が ちがう（sin ＝ 向かい ÷ 斜辺、cos ＝ となり ÷ 斜辺、tan ＝ 向かい ÷ となり）', flip: '分母と 分子が 逆',
+  ratio: 'どの 辺と どの 辺の 比か が ちがう（sinθ ＝ {向かい|斜辺}、cosθ ＝ {となり|斜辺}、tanθ ＝ {向かい|となり}）', flip: '分母と 分子が 逆',
   hyp: '斜辺は 直角の 向かいの いちばん 長い 辺', oppAdj: '向かいの 辺は θ に ふれない 辺、となりの 辺は θ と 直角を むすぶ 辺',
   tanMix: 'tan は 座標では ない（x座標は cos、y座標は sin）', hyp1: '1 は 斜辺の 長さ',
   mirror: '180° − θ の 点と とりちがえた（はかりはじめは x軸の 正の 向き）', ref: '30° と 60° が 入れかわっている（30° は y ＝ 1/2、60° は x ＝ 1/2 の 補助線の 上）',
   k45: '45° の 動径は 補助線の 交点 (1/2, 1/2) を 通る', swap: 'sin と cos（y座標と x座標）が 入れかわっている', sign: '＋ と − が はんたい',
-  len: '1/2 と √3/2（短い・長い）が 入れかわっている', inv: 'x ÷ y に した（tan は y ÷ x）', ycoord: 'y座標 そのまま に した（tan は y ÷ x）',
+  len: '1/2 と √3/2（短い・長い）が 入れかわっている', inv: '{x|y} に した（tan は {y|x}）', ycoord: 'y座標 そのまま に した（tan は {y|x}）',
   zero: '0 に なるのは 点が 軸の 上に ある とき だけ', fswap: '180° − θ では sin と cos は 入れかわらない', fkeep: '90° − θ では sin と cos が 入れかわる',
   ang: 'もとに する 角が ちがう（180° − θ の θ を 使う）', tinv: 'tan(180° − θ) は −tanθ（逆数には ならない）',
   half: 'あてはまる ものが もう1つ ある', extra: 'cos・tan の 値からは θ は 1つに 決まる', arc: 'えらんだ 弧が はんたい', line: '● ふくむ・○ ふくまない が ちがう',
@@ -1155,7 +1176,7 @@ const TYPE_TEXT = {
 };
 const MASTER_TEXT = {
   ratio: 'sin・cos・tan の 辺', flip: '分母と 分子', hyp: '斜辺', oppAdj: '向かいと となり', tanMix: '座標と cos・sin', hyp1: '斜辺 1',
-  mirror: '角の はかりかた', ref: '30° と 60°', k45: '45° の 点', swap: 'sin と cos', sign: '＋ と −', len: '1/2 と √3/2', inv: 'tan ＝ y ÷ x', ycoord: 'tan ＝ y ÷ x',
+  mirror: '角の はかりかた', ref: '30° と 60°', k45: '45° の 点', swap: 'sin と cos', sign: '＋ と −', len: '1/2 と √3/2', inv: 'tan ＝ {y|x}', ycoord: 'tan ＝ {y|x}',
   zero: '0 に なる とき', fswap: '180° − θ', fkeep: '90° − θ', ang: 'もとの 角', tinv: 'tan(180° − θ)', half: 'あてはまる もの ぜんぶ', extra: 'θ の 数', arc: '弧の むき', line: '● と ○',
   one: '鋭角と 鈍角', both: '符号を 1つに しぼる', useSin: 'tan を 使う とき', useCos: 'tan を 使う とき', div: 'かけ算と わり算', noEye: '目の 高さ', subEye: '目の 高さ', distEye: '目の 高さ',
   eyeOld: '目線を 変える', angOld: '目線を 変える', eyeDir: '角の 大きさ', same: '角の 大きさ', depr: '見上げる・見下ろす', scSwap: 'sin と cos', useTan: '斜辺と sin・cos',
@@ -1189,7 +1210,7 @@ function likeOK(q, m, types) {
 }
 
 // ---------- 章・ダメージ・HP（単位円クエストと おなじ） ----------
-const MID_HP = 2, FINAL_HP = NORM_CH.length;   // 中ボスの 問題（はじめに 用意する 数）、さいごの 章は 9つの 章を 1問ずつ
+const MID_HP = 2, FINAL_HP = NORM_CH.length;   // 中ボスの 問題（はじめに 用意する 数）、さいごの 章は 8つの 章を 1問ずつ
 const zakoHP = L => 1 + Math.floor(L / 2);
 const midHP = L => 7 + Math.floor(L / 2);
 const finalHP = L => 34 + L;
@@ -1201,12 +1222,21 @@ function damage(p, L, ev, rng, combo = 0) {
   return { d: crit ? d * 2 : d, crit };
 }
 // 各章：ザコ（形ごとに 1体ずつ。第1章は 色の 2辺の 形を 4体、角の いちは つなぎから）→ 中ボス（その 章の 形を 問題集の ことばで）。さいごの 章は 9つの 章を 1問ずつ
-function makeSlots(ch, rng) {
+// 第1章（1周目）：はじめは 名前つき・基本の 向き（直角 右下・θ 左下）で ヘンサガシ → イロワケ → イロワケ（名前つき、向きは いろいろ）。そのあと 名前なし
+const INTRO = [{ form: 'triSide', intro: true, basic: true }, { form: 'triPick', intro: true, basic: true }, { form: 'triPick', intro: true }];
+function makeSlots(ch, rng, opt = {}) {
   const C = CHAPTERS[ch - 1];
   if (C.final) return shuffle(rng, NORM_CH.map(c => c.lv)).map(lv => ({ lv, boss: true }));
+  if (C.intro && opt.intro) {
+    const rest = (C.zako || C.forms).slice();
+    INTRO.forEach(s => rest.splice(rest.indexOf(s.form), 1));
+    let order = shuffle(rng, rest);
+    for (let i = 0; i < 50 && order.some((f, j) => j > 0 && f !== 'triPick' && order[j - 1] === f); i++) order = shuffle(rng, order);
+    return INTRO.map(s => Object.assign({ lv: 1 }, s)).concat(order.map(form => ({ lv: 1, form })), [...Array(MID_HP).keys()].map(() => ({ lv: 1, boss: true })));
+  }
   const rest = shuffle(rng, (C.zako || C.forms).filter(f => f !== C.first));
   let order = C.first ? [C.first].concat(rest) : rest;
-  if (C.ch === 1) for (let i = 0; i < 50 && order.some((f, j) => j > 0 && f !== 'triPick' && order[j - 1] === f); i++) order = shuffle(rng, order);
+  if (C.intro) for (let i = 0; i < 50 && order.some((f, j) => j > 0 && f !== 'triPick' && order[j - 1] === f); i++) order = shuffle(rng, order);
   const normal = order.map(form => ({ lv: C.lv, form }));
   const mid = [...Array(MID_HP).keys()].map(() => ({ lv: C.lv, boss: true }));
   return normal.concat(mid);
@@ -1216,7 +1246,7 @@ function newContext() { return { recent: [], recentFig: [], weak: {}, log: [] };
 function figKey(prm) {
   const m = prm.mode;
   if (m.startsWith('tri')) return 'tri:' + prm.rot + prm.flip;   // 同じ 向きの 三角形は 続けない
-  if (m === 'bridge') return 'br:' + prm.a;
+  if (m === 'bridge') return 'br:' + prm.a + prm.ask;
   if (m.startsWith('eq')) return 'pts:' + solutions(prm.fn, prm.v).join(',');
   if (m.startsWith('ineq')) return 'arc:' + prm.fn + vStr(prm.fn, prm.v);
   if (m.startsWith('pos') || m === 'coord') return 'u:' + prm.u;
@@ -1231,7 +1261,9 @@ function makeProblem(slot, ctx, rng) {
   if (w) for (let i = 0; i < 400 && !prm; i++) { const c = gen(); if (likeOK(c, w.like, w.types) && fresh(c)) { prm = c; target = true; } }
   for (let i = 0; i < 400 && !prm; i++) { const c = gen(); if (fresh(c)) prm = c; }
   if (!prm) prm = gen();
+  if (slot.intro && !target && slot.basic) prm = Object.assign({}, prm, { rot: 0, flip: 0 });   // 基本の 向き
   const p = build(prm, rng, { boss: !!slot.boss });
+  if (slot.intro && !target) p.labels = true;   // 辺の 名前を 書いたまま（苦手の 出し直しは 名前なし）
   p.target = { lv: target };
   p.key = JSON.stringify(prm);
   ctx.recent.push(p.key);
@@ -1255,7 +1287,7 @@ function record(ctx, p, ok, cls, ms) {
 }
 
 G.SankakuhiCore = {
-  SIDE, sideName, triSideAt, radiusAt, triLens, triVerts, triLayout, RATIO, RADIUS, DATA_V, migrateProg, migrateZk,
+  INTRO, SIDE, sideName, triSideAt, radiusAt, triLens, triVerts, triLayout, RATIO, RADIUS, DATA_V, migrateProg, migrateZk,
   PTS, OFF_AXIS, FIG, angStr, vStr, vNum, V, NONE, cosV, sinV, tanV, valOf, solutions, segs, cuts, arcSat, arcAns, arcOf, rangeStr,
   TRIPLES, remLegs, MOVES, TREE_H, moveAns, REV, TAP, CHAPTERS, NORM_CH, FORM_LV, MONSTERS, monsterOf, zukanAfter, zukanCount,
   GEN, genPrm, makeOptions, build, figKey, judge, classify, describe, masterText, likeOK, TYPE_TEXT, MASTER_TEXT,
@@ -1299,6 +1331,7 @@ function rootHTML(t) { return t.replace(/√(\d+)/g, '<span class="rt">√<span 
 const FR = (a, b) => '<span class="fr"><span class="nu">' + a + '</span><span class="de">' + b + '</span></span>';
 function mathHTML(text, stacked) {
   let h = esc(text);
+  h = h.replace(/\[O\]/g, '<span class="bar o"></span>').replace(/\[B\]/g, '<span class="bar b"></span>');   // 図と 同じ 色の 太い 線（オレンジ・青）
   h = h.replace(/\{([^{}|]*)\|([^{}]*)\}/g, (m, a, b) => FR(a, b));   // {分子|分母}
   if (stacked) h = h.replace(/([−±]?)(\d*(?:√\d+)?\d*)\/(√?\d+)/g, (m, sg, nu, de) => (nu ? '<span class="rt">' + sg + FR(nu, de) + '</span>' : m));   // 符号と 分数の あいだで 改行しない
   return rootHTML(h);
@@ -1509,6 +1542,26 @@ function arcPath(ctx, g, from, to, color, width) {   // 15° 単位の from → 
   ctx.strokeStyle = color; ctx.lineWidth = width * g.d; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.arc(g.cx, g.cy, g.r, -ang(from), -ang(to), true); ctx.stroke(); ctx.lineCap = 'butt';
 }
+// 図の 中の 分数つきの 文：items は 文字 か { nu, de }（文字）か { nuBar, deBar }（色の 線）。左は x、まんなかの 高さは y
+function fracText(ctx, g, items, x, y, col, size, center) {
+  const d = g.d, fs = size * d, sm = fs * 0.82;
+  const wOf = it => { if (typeof it === 'string') { ctx.font = 'bold ' + fs + 'px serif'; return ctx.measureText(it).width; }
+    if (it.nuBar) return 26 * d; ctx.font = 'bold ' + sm + 'px serif'; return Math.max(ctx.measureText(it.nu).width, ctx.measureText(it.de).width) + 4 * d; };
+  const total = items.reduce((s, it) => s + wOf(it), 0);
+  let cx = center ? x - total / 2 : x;
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.lineJoin = 'round';
+  items.forEach(it => {
+    const w = wOf(it);
+    if (typeof it === 'string') { ctx.font = 'bold ' + fs + 'px serif'; ctx.lineWidth = 4 * d; ctx.strokeStyle = '#000a18'; ctx.strokeText(it, cx, y); ctx.fillStyle = col; ctx.fillText(it, cx, y); }
+    else {
+      ctx.fillStyle = col; ctx.fillRect(cx, y - 0.8 * d, w, 1.6 * d);   // 分数の 横線
+      if (it.nuBar) { ctx.fillStyle = it.nuBar; ctx.fillRect(cx + 3 * d, y - 9 * d, w - 6 * d, 5 * d); ctx.fillStyle = it.deBar; ctx.fillRect(cx + 3 * d, y + 4 * d, w - 6 * d, 5 * d); }
+      else { ctx.font = 'bold ' + sm + 'px serif'; ctx.textAlign = 'center'; ctx.fillStyle = col; ctx.fillText(it.nu, cx + w / 2, y - sm * 0.62); ctx.fillText(it.de, cx + w / 2, y + sm * 0.68); ctx.textAlign = 'left'; }
+    }
+    cx += w;
+  });
+}
+function capF(ctx, g, items, col) { fracText(ctx, g, items, 6 * g.d, 19 * g.d, col || YEL, g.W < 260 * g.d ? 11 : 13, false); }   // 左上（分数は 2段）
 function cap(ctx, g, s, col) { textAt(ctx, g, s, 6 * g.d, 11 * g.d, col || YEL, 'left', g.W < 260 * g.d ? 11 : 13); }   // 図の 左上の 説明
 function hLine(ctx, g, y, col) { ctx.strokeStyle = col; ctx.lineWidth = 1.6 * g.d; ctx.setLineDash([6 * g.d, 4 * g.d]); ctx.beginPath(); ctx.moveTo(0, Y(g, y)); ctx.lineTo(g.W, Y(g, y)); ctx.stroke(); ctx.setLineDash([]); }
 function vLine(ctx, g, x, col) { ctx.strokeStyle = col; ctx.lineWidth = 1.6 * g.d; ctx.setLineDash([6 * g.d, 4 * g.d]); ctx.beginPath(); ctx.moveTo(X(g, x), 0); ctx.lineTo(X(g, x), g.H); ctx.stroke(); ctx.setLineDash([]); }
@@ -1541,7 +1594,7 @@ function coordSeg(ctx, g, u, fn, blink) {
   seg(ctx, g, g.cx, g.cy, X(g, x), g.cy, col('cos'), hot('cos') ? 5 : 2);
   seg(ctx, g, X(g, x), g.cy, X(g, x), Y(g, y), col('sin'), hot('sin') ? 5 : 2, !hot('sin'));
   pointP(ctx, g, x, y, YEL, 'P');
-  if (fn === 'tan' && state.reveal) cap(ctx, g, 'tan ＝ y ÷ x');
+  if (fn === 'tan' && state.reveal) capF(ctx, g, ['tan ＝ ', { nu: 'y', de: 'x' }]);
 }
 function dot(ctx, g, u, color, filled, r) {
   const px = X(g, Math.cos(ang(u))), py = Y(g, Math.sin(ang(u)));
@@ -1607,7 +1660,7 @@ function drawRem(ctx, g, q) {
     seg(ctx, g, g.cx, g.cy, X(g, x), Y(g, y), '#fff', 2);
     seg(ctx, g, X(g, x), Y(g, y), X(g, x), g.cy, 'rgba(255,255,255,0.7)', 1.3, true);
     pointP(ctx, g, x, y, rev ? YEL : '#fff', 'P');
-    if (rev) cap(ctx, g, 'tan ＝ y ÷ x');
+    if (rev) capF(ctx, g, ['tan ＝ ', { nu: 'y', de: 'x' }]);
     return;
   }
   if (rev) pts.forEach(([x, y]) => { seg(ctx, g, g.cx, g.cy, X(g, x), Y(g, y), YEL, 2); pointP(ctx, g, x, y, YEL); });
@@ -1674,13 +1727,15 @@ function drawTri(ctx, g, q) {
       textAt(ctx, g, t, x, y, '#fff', 'center', 14);
     });
   }
+  if (q.labels) [['hyp', '斜辺', '#fff'], ['opp', '向かい', ORANGE2], ['adj', 'となり', BLUE2]].forEach(([k, t, col]) => {
+    const [a, b] = pairs[k], [x, y] = out((P[a][0] + P[b][0]) / 2, (P[a][1] + P[b][1]) / 2, 18);
+    textAt(ctx, g, t, x, y, '#cfd8ff', 'center', 13);   // 名前は 同じ 色（太線の オレンジ・青と まぎれないように）
+  });
   if (m.mode === 'triVal') ['A', 'C', 'B'].forEach((t, i) => { const [x, y] = out(P[i][0], P[i][1], 14); textAt(ctx, g, t, x, y, '#cfd8ff', 'center', 13); });
   // 説明
   if (m.mode === 'triPick') {
-    ctx.font = 'bold ' + ((g.W < 260 * d ? 11 : 13) * d) + 'px serif'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-    const y = 12 * d; let x = 6 * d;
-    [['オレンジ', ORANGE2], [' ÷ ', '#fff'], ['青', BLUE2]].forEach(([t, c]) => { ctx.fillStyle = c; ctx.fillText(t, x, y); x += ctx.measureText(t).width; });
-    if (rev) { const f = C.RATIO; const n = C.sideName(m.num), dn = C.sideName(m.den), fn = Object.keys(f).find(k => f[k][0] === n && f[k][1] === dn); ctx.fillStyle = YEL; ctx.fillText(' ＝ ' + fn + 'θ', x, y); }
+    const f = C.RATIO, n = C.sideName(m.num), dn = C.sideName(m.den), fn = Object.keys(f).find(k => f[k][0] === n && f[k][1] === dn);
+    capF(ctx, g, ['比 ', { nuBar: ORANGE2, deBar: BLUE2 }].concat(rev ? [' ＝ ' + fn + 'θ'] : []), rev ? YEL : '#fff');   // 分数の 形（分子 オレンジ、分母 青）
   }
   if (m.mode === 'triSide' && rev && g.W >= 300 * d) cap(ctx, g, { hyp: '斜辺 ＝ 直角の 向かい', opp: '向かい ＝ θ に ふれない', adj: 'となり ＝ θ と 直角の 間' }[m.ask]);
 }
@@ -1702,7 +1757,7 @@ function drawBridge(ctx, g, q) {
   }
 }
 
-// ---------- 第9章 はかる：地面・木・人・がけの 図 ----------
+// ---------- 第8章 はかる：地面・木・人・がけの 図 ----------
 const GROUND = '#6b4a2b', GREEN = '#3fae5a', ORANGE = '#ff9f43';
 function angleArc(ctx, g, x, y, a0, a1, r, col, label, lr) {   // キャンバスの 角度（下向きが ＋）で a0 → a1
   ctx.strokeStyle = col; ctx.lineWidth = 2 * g.d;
@@ -1839,7 +1894,7 @@ function drawScene(ctx, g, q) {
   angleArc(ctx, g, ax, ay, 0, a, 30, rev ? YEL : '#fff', C.angStr(m.a), 46);
   dimV(ctx, g, fx - 14 * d, sy, ay, m.h + ' m', '#fff', -1);
   textAt(ctx, g, 'x', (fx + bx) / 2, sy + 12 * d, rev ? YEL : '#fff', 'center', 14);
-  if (rev) { angleArc(ctx, g, bx, sy, Math.PI, Math.PI + a, 30, YEL, C.angStr(m.a), 46); seg(ctx, g, fx, sy, bx, sy, YEL, 3.5); formula('x ＝ ' + m.h + ' ÷ tan ' + C.angStr(m.a), true); }
+  if (rev) { angleArc(ctx, g, bx, sy, Math.PI, Math.PI + a, 30, YEL, C.angStr(m.a), 46); seg(ctx, g, fx, sy, bx, sy, YEL, 3.5); fracText(ctx, g, ['x ＝ ', { nu: String(m.h), de: 'tan ' + C.angStr(m.a) }], W / 2, 20 * d, YEL, W < 260 * d ? 11 : 14, true); }
 }
 
 // ---------- タップ ----------
@@ -1912,13 +1967,15 @@ function newProblem() {
 function startChapter(ch) {
   state.ch = ch;
   const c = chap();
-  state.slots = C.makeSlots(ch, rng);
+  const pr0 = loadProg(), intro = pr0.lap === 1;   // 1周目だけ はじめは 見せる
+  state.slots = C.makeSlots(ch, rng, { intro });
   state.slotIdx = 0; state.combo = 0; state.bossMiss = false;
   state.hp = state.maxHp = c.final ? C.finalHP(heroLV()) : C.zakoHP(heroLV());
   state.lives = MAX_LIVES;
   monsterEl.classList.remove('dying');
   newProblem();
   if (c.final) bossWarn(true);
+  if (c.intro && intro) { $('defClose').textContent = '▶ たたかう'; $('defScreen').classList.remove('hidden'); $('defScreen').scrollTop = 0; }   // 第1章の まえに 定義を 見せる
   setMessage((c.final ? c.boss.name + 'が あらわれた！\nここからは 問題集の ことばで 出るぞ！' : c.title + '\n' + enemyNow().name + 'が　あらわれた！') + '\n' + hint());
 }
 function answerNow() {
@@ -2095,16 +2152,13 @@ function next() { if (state.phase !== 'next' || !state.onNext) return; const cb 
 
 // ---------- チュートリアル ----------
 const TUT = [
-  { prm: { mode: 'triPick', rot: 1, flip: 1, w: 0, num: [1, 2], den: [0, 2] },
-    msg: '【れんしゅう 1/4】オレンジは θ の 向かいの 辺、青は 斜辺（直角の 向かい）。\n向かい ÷ 斜辺 は sinθ。sinθ を えらぼう',
-    wrongOpt: '向かい ÷ 斜辺 は sinθ だよ' },
   { prm: { mode: 'posO', u: 8 },
-    msg: '【れんしゅう 2/4】120° ＝ 180° − 60°。x軸の 負の 向きから 60° もどった 動径（x ＝ −1/2 の 補助線と 半円の 交点を 通る）。\n点滅している 動径の どこを タップしても よい',
+    msg: '【れんしゅう 1/3】120° ＝ 180° − 60°。x軸の 負の 向きから 60° もどった 動径（x ＝ −1/2 の 補助線と 半円の 交点を 通る）。\n点滅している 動径の どこを タップしても よい',
     wrongTap: 'そこじゃないよ。点滅している 動径（原点からの 線）の どこかを タップしてね' },
   { prm: { mode: 'valSin', fn: 'sin', u: 8 }, seg: true,
-    msg: '【れんしゅう 3/4】sin は y座標（高さ）。きいろの 線の 長さは √3/2。\n√3/2 を えらぼう', wrongOpt: 'きいろの 線（y座標）の 長さを みてね。√3/2 だよ' },
+    msg: '【れんしゅう 2/3】sin は y座標（高さ）。きいろの 線の 長さは √3/2。\n√3/2 を えらぼう', wrongOpt: 'きいろの 線（y座標）の 長さを みてね。√3/2 だよ' },
   { prm: { mode: 'ineqSin', fn: 'sin', v: { s: 1, k: 1 }, s: 1, strict: false },
-    msg: '【れんしゅう 4/4】sinθ ≧ 1/2 は y ＝ 1/2 の 補助線より 上の 弧。\n点滅している 弧を タップしよう',
+    msg: '【れんしゅう 3/3】sinθ ≧ 1/2 は y ＝ 1/2 の 補助線より 上の 弧。\n点滅している 弧を タップしよう',
     wrongTap: 'そこは 線より 下。上の 弧を タップしてね' },
 ];
 function tutDone() { try { return localStorage.getItem(TUT_KEY) === '1'; } catch (e) { return false; } }
@@ -2151,6 +2205,7 @@ function startTutorial() {
 function tutProblem() {
   const t = TUT[state.tut.i];
   state.problem = C.build(t.prm, Math.random);
+  if (t.prm.mode === 'triPick') state.problem.labels = true;   // 名前つきの 三角形で
   resetInput();
   state.phase = 'play';
   state.tut.hintSeg = !!t.seg;
@@ -2217,6 +2272,8 @@ optBtns.forEach((b, i) => b.addEventListener('click', () => {
 $('decideBtn').addEventListener('click', submit);
 $('ruleBtn').addEventListener('click', () => $('ruleScreen').classList.remove('hidden'));
 $('ruleClose').addEventListener('click', () => $('ruleScreen').classList.add('hidden'));
+$('ruleDef').addEventListener('click', () => { $('ruleScreen').classList.add('hidden'); $('defClose').textContent = '▶ もどる'; $('defScreen').classList.remove('hidden'); $('defScreen').scrollTop = 0; });
+$('defClose').addEventListener('click', () => $('defScreen').classList.add('hidden'));
 $('nextBtn').addEventListener('click', next);
 $('mineBtn').addEventListener('click', () => { if (state.phase === 'next') { state.view = 'mine'; renderControls(); draw(); } });
 $('ansBtn').addEventListener('click', () => { if (state.phase === 'next') { state.view = 'ans'; renderControls(); draw(); } });
@@ -2249,7 +2306,7 @@ document.addEventListener('keydown', e => {
   e.preventDefault();
   if (e.repeat) return;
   if (!$('resetScreen').classList.contains('hidden') || !$('mapScreen').classList.contains('hidden') || !$('quitScreen').classList.contains('hidden')) return;
-  const overlayBtn = { ruleScreen: 'ruleClose', zukanScreen: 'zukanClose', titleScreen: 'startBtn', tutDoneScreen: 'goBtn', clearScreen: 'clearBtn', gameOverScreen: 'retryBtn' };
+  const overlayBtn = { defScreen: 'defClose', ruleScreen: 'ruleClose', zukanScreen: 'zukanClose', titleScreen: 'startBtn', tutDoneScreen: 'goBtn', clearScreen: 'clearBtn', gameOverScreen: 'retryBtn' };
   for (const id in overlayBtn) if (!$(id).classList.contains('hidden')) { $(overlayBtn[id]).click(); return; }
   if (state.phase === 'next') next();
   else if (state.phase === 'play' && e.key === 'Enter') submit();
