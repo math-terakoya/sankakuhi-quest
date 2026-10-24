@@ -815,14 +815,18 @@ function makeOptions(q, rng, boss) {
     T[q.f].forEach(([t, ty]) => add(t, t, ty));
   }
   if (m === 'eqR') {
-    const set = (fn, v) => solutions(fn, v).join(','), fn = q.fn, v = q.v;
-    const eo = (f, w, t) => { if (w === NONE || !solutions(f, w).length) return; add(eqStr(f, w), set(f, w), t); };
-    eo(fn, v, []);
-    if (fn !== 'tan') eo(other(fn), v, ['swap']);
-    if (v.k) eo(fn, neg(v), ['sign']);
-    if (v.k === 1 || v.k === 3) eo(fn, lenSwap(v), fn === 'tan' ? ['inv'] : ['len']);
-    if (fn !== 'tan' && v.k) eo(other(fn), neg(v), ['swap', 'sign']);
-    for (const w of EQ_VALS[fn]) eo(fn, w, ['scatter']);
+    // 解が 図の 点 だけに なる 方程式を えらぶ。はずれ：解が 多すぎる（sin の 値から θ は 2つ）・たりない・ちがう 点。sin・cos・tan を まぜる
+    const S = solutions(q.fn, q.v), key = (f, w) => solutions(f, w).join(','), used = [key(q.fn, q.v)];
+    add(eqStr(q.fn, q.v), used[0], []);
+    const pool = [];
+    for (const f of FN3) for (const w of EQ_VALS[f]) {
+      const T = solutions(f, w); if (!T.length || used.includes(T.join(','))) continue;
+      const over = S.every(u => T.includes(u)), under = T.every(u => S.includes(u));
+      const near = S.some(u => T.includes(u));   // 図の 点を ふくむ ものを 先に（判断が 1つ だけ ちがう）
+      pool.push({ f, w, T, ty: over ? ['only'] : under ? ['part'] : ['scatter'], pr: over ? 0 : under ? 1 : near ? 2 : 3 + rng() });
+    }
+    pool.sort((a, b) => a.pr - b.pr);
+    for (const c of pool) { const k = c.T.join(','); if (used.includes(k)) continue; used.push(k); add(eqStr(c.f, c.w), k, c.ty); }
   }
   if (m === 'ineqR') {
     add(ineqStr(q.fn, q.v, q.s, q.strict), 'a', []);
@@ -910,18 +914,18 @@ function texts(q) {
       return [['▼ 単位円に 置く', '斜辺 1 の とき、' + A + ' の ' + w + 'の 長さは？'], ['図の 直角三角形で 斜辺の 長さが 1 の とき、角 ' + A + ' の ' + w + 'の 長さを 三角比で 表せ。']];
     },
     posA: () => [['▼ 動径を えらべ', angStr(q.u) + ' の 動径を えらべ'], ['角 ' + angStr(q.u) + ' の 動径を 図示せよ。', '角 ' + angStr(q.u) + ' を 表す 動径を 選べ。']],
-    posR: () => [['▼ この 点の 角は？', '？（' + RANGE + '）'], ['図の 点 P は、角 θ（' + RANGE + '）の 動径と 半円の 交点で ある。θ を 求めよ。']],
+    posR: () => [['▼ この 点の 角は？', '図の 点 P の 角 θ は？（' + RANGE + '）'], ['図の 点 P は、角 θ（' + RANGE + '）の 動径と 半円の 交点で ある。θ を 求めよ。']],
     valSin: () => [['▼ あたいは？', fnAt(q.fn, q.u) + ' ＝ ？'], [fnAt(q.fn, q.u) + ' の 値を 求めよ。', '次の 値を 求めよ。　' + fnAt(q.fn, q.u)]],
-    coord: () => [['▼ この 点の 座標は？', '？'], ['半径 1 の 半円の 上の 点 P が 図の 位置に ある。P の 座標を 求めよ。']],
+    coord: () => [['▼ この 点の 座標は？', '図の 点 P の 座標は？'], ['半径 1 の 半円の 上の 点 P が 図の 位置に ある。P の 座標を 求めよ。']],
     signAt: () => [['▼ ＋？ −？ 0？', fnAt(q.fn, q.u) + ' は ＋？ −？ 0？'], [fnAt(q.fn, q.u) + ' の 値は 正・負・0 の どれか。']],
     signQ: () => [['▼ ＋？ −？ 0？', 'θ が ' + INFO[q.q] + 'の とき ' + q.fn + 'θ は ＋？ −？ 0？'], ['θ が ' + INFO[q.q] + 'の とき、' + q.fn + 'θ の 値は 正・負・0 の どれか。']],
     sup: () => [['▼ 同じ 値は？', fnAt(q.fn, q.u) + ' と 同じ 値は？'], [fnAt(q.fn, q.u) + ' を 鋭角の 三角比で 表せ。']],
     comp: () => [['▼ 同じ 値は？', fnAt(q.fn, q.u) + ' と 同じ 値は？'], [fnAt(q.fn, q.u) + ' を ' + angStr(6 - q.u) + ' の 三角比で 表せ。']],
     formula: () => [['▼ 式を えらべ', FORMULA_L[q.f] + ' ＝ ？'], [FORMULA_L[q.f] + ' を θ の 三角比で 表せ。']],
     eqSin: () => [['▼ 点を ぜんぶ えらべ', eqStr(q.fn, q.v) + ' と なる 点を ぜんぶ'], [RANGE + ' の とき、方程式 ' + eqStr(q.fn, q.v) + ' を 解け。', RANGE + ' の とき、次の 方程式を 解け。　' + eqStr(q.fn, q.v)]],
-    eqR: () => [['▼ 方程式を えらべ', 'θ の 点が この 点の とき、θ を 解と する 方程式は？'], ['角 θ（' + RANGE + '）の 動径と 半円の 交点が 図の 点で あるとき、θ を 解と する 方程式は 次の どれか。']],
+    eqR: () => [['▼ 方程式を えらべ', RANGE + ' で、解が 図の 点 だけに なる 方程式は どれ？'], [RANGE + ' の とき、解が 図の 点に なる 方程式を 選べ。']],
     ineqSin: () => [['▼ 弧と ●○', ineqStr(q.fn, q.v, q.s, q.strict) + ' と なる 弧は？'], [RANGE + ' の とき、不等式 ' + ineqStr(q.fn, q.v, q.s, q.strict) + ' を 解け。', RANGE + ' の 範囲で、' + ineqStr(q.fn, q.v, q.s, q.strict) + ' を 満たす θ の 値の 範囲を 求めよ。']],
-    ineqR: () => [['▼ 不等式を えらべ', 'θ の 点が この 弧の 上の とき、θ の 範囲を 表す 不等式は？'], ['角 θ（' + RANGE + '）の 動径と 半円の 交点が 図の 弧の 上に あるとき、θ の 範囲を 表す 不等式は 次の どれか。']],
+    ineqR: () => [['▼ 不等式を えらべ', RANGE + ' で、解が 図の 弧に なる 不等式は どれ？（● は ふくむ、○ は ふくまない）'], [RANGE + ' の とき、解が 図の 弧に なる 不等式を 選べ。（● は ふくむ、○ は ふくまない）']],
     remSin: () => {
       const { y, c } = remLegs(q), g = 'sinθ ＝ ' + frac(y, c);
       if (q.info === 'none') return [['▼ のこりの 値は？', g + '（' + RANGE + '）の とき cosθ ＝ ？'], [RANGE + ' で、' + g + ' の とき、cosθ の 値を 求めよ。']];
@@ -1047,7 +1051,7 @@ function reasonLines(q) {
     L.push('→ ' + rangeStr(q.fn, q.v, arcAns(q.fn, q.v, q.s), q.strict));
     L.push('≦ ≧ は イコール あり → ●、＜ ＞ は イコール なし → ○');
   }
-  if (m === 'eqR') L.push('図の 点は θ ＝ ' + solutions(q.fn, q.v).map(angStr).join('、') + ' → ' + eqStr(q.fn, q.v));
+  if (m === 'eqR') { const S = solutions(q.fn, q.v); L.push('図の 点は θ ＝ ' + S.map(angStr).join('、') + '（' + S.length + 'つ）→ 解が ちょうど この ' + S.length + 'つに なるのは ' + eqStr(q.fn, q.v)); L.push('sin の 値からは θ が 2つ（鋭角と 鈍角）、cos・tan の 値からは 1つ'); }
   if (m === 'ineqR') L.push('図の 弧は ' + rangeStr(q.fn, q.v, arcAns(q.fn, q.v, q.s), q.strict) + ' → ' + ineqStr(q.fn, q.v, q.s, q.strict));
   if (m === 'remSin') {
     const { y, x, c } = remLegs(q);
@@ -1155,6 +1159,7 @@ function classify(p, ans) {
   return { types: t };
 }
 const TYPE_TEXT = {
+  only: 'その 式は 解が 図の 点 より 多い（sin の 値からは θ が 2つ）', part: 'その 式の 解は 図の 点の 一部 だけ',
   ratio: 'どの 辺と どの 辺の 比か が ちがう（sinθ ＝ {向かい|斜辺}、cosθ ＝ {となり|斜辺}、tanθ ＝ {向かい|となり}）', flip: '分母と 分子が 逆',
   hyp: '斜辺は 直角の 向かいの いちばん 長い 辺', oppAdj: '向かいの 辺は θ に ふれない 辺、となりの 辺は θ と 直角を むすぶ 辺',
   tanMix: 'tan は 座標では ない（x座標は cos、y座標は sin）', hyp1: '1 は 斜辺の 長さ',
@@ -1175,6 +1180,7 @@ const TYPE_TEXT = {
   scatter: 'えらびかたが ばらばら',
 };
 const MASTER_TEXT = {
+  only: '解の 数', part: '解の 数',
   ratio: 'sin・cos・tan の 辺', flip: '分母と 分子', hyp: '斜辺', oppAdj: '向かいと となり', tanMix: '座標と cos・sin', hyp1: '斜辺 1',
   mirror: '角の はかりかた', ref: '30° と 60°', k45: '45° の 点', swap: 'sin と cos', sign: '＋ と −', len: '1/2 と √3/2', inv: 'tan ＝ {y|x}', ycoord: 'tan ＝ {y|x}',
   zero: '0 に なる とき', fswap: '180° − θ', fkeep: '90° − θ', ang: 'もとの 角', tinv: 'tan(180° − θ)', half: 'あてはまる もの ぜんぶ', extra: 'θ の 数', arc: '弧の むき', line: '● と ○',
