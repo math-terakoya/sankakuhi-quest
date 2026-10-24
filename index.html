@@ -281,6 +281,11 @@ padding: 14px 0; text-shadow: 3px 3px 0 #400; animation: warn 2s forwards;
 #zukanList .zi.lock { color: #555; }
 #zukanList .zi.got .mk { color: #ffd84a; }
 #zukanList .zi.master .mk { color: #44ff88; }
+#zukanList .zi.mabz { border: 2px solid #ffd84a; box-shadow: 0 0 6px rgba(255,216,74,0.7), inset 0 0 6px rgba(255,120,220,0.35); }
+#zukanList .zi.mabz.lock { color: #a08a3a; }
+#monster.mab { animation: bossFloat 1.6s ease-in-out infinite, mabHue 2.4s linear infinite; text-shadow: 0 0 12px #ff7ad9, 0 0 18px #7fe8ff; }
+@keyframes mabHue { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+.boss-warn.mab { background: linear-gradient(90deg, rgba(255,90,180,0.85), rgba(255,216,74,0.9), rgba(90,200,255,0.85)); text-shadow: 3px 3px 0 #403; }
 /* せまい 画面：問題集の ことばを 少し 小さく、メッセージ欄を 少し 低く（図を のこす） */
 @media (max-width: 360px) { #problem .expr.exam { font-size: 13px; line-height: 1.45; } }
 @media (max-height: 640px) { #message { max-height: 22vh; max-height: 22dvh; } #problem .expr.exam { line-height: 1.4; } }
@@ -496,6 +501,8 @@ const fnAt = (fn, u) => fn + ' ' + angStr(u);
 const eqStr = (fn, v) => fn + 'θ ＝ ' + vStr(fn, v);
 const SGN = s => (s > 0 ? '＋' : s < 0 ? '−' : '0');
 const RANGE = '0° ≦ θ ≦ 180°';
+const HALF = { lo: '0° ≦ θ ≦ 90°', hi: '90° ≦ θ ≦ 180°' };
+const inHalf = (q, u) => !q.half || (q.half === 'lo' ? u <= 6 : u >= 6);
 
 // ---------- 不等式の 弧：f ＝ v と なる 点で 半円を 区切る ----------
 function cuts(fn, v) { return solutions(fn, v).filter(u => u > 0 && u < 12); }
@@ -592,14 +599,22 @@ const TAP = ['triSide', 'posA', 'posO', 'eqSin', 'eqCos', 'eqTan', 'ineqSin', 'i
 const RADIUS = ['posA', 'posO'];   // 動径を えらぶ（原点から 周までの 線の どこを タップ しても よい）
 // 2026-10-24：直角三角形は 三角比クエストⅠ（前半）へ。この ゲーム（Ⅱ・三角比の 拡張）は 角の いち（はじめは つなぎ bridge）〜 はかる ＋ さいごの 章
 const CHAPTERS = [
-  { ch: 1, lv: 1, title: '第1章 角の いち', forms: ['bridge', 'posA', 'posO', 'posR'], first: 'bridge', boss: { name: 'オオメグリ', sprite: '🌪️' } },
-  { ch: 2, lv: 2, title: '第2章 あたい', forms: ['valSin', 'valCos', 'valTan', 'coord'], boss: { name: 'ザヒョウオウ', sprite: '🏯' } },
-  { ch: 3, lv: 3, title: '第3章 ＋ と −', forms: ['signAt', 'signQ', 'signAxis'], boss: { name: 'フゴウノカミ', sprite: '⚖️' } },
-  { ch: 4, lv: 4, title: '第4章 180° − θ・90° − θ', forms: ['sup', 'comp', 'formula'], boss: { name: 'カガミオウ', sprite: '🏛️' } },
-  { ch: 5, lv: 5, title: '第5章 方程式', forms: ['eqSin', 'eqCos', 'eqTan', 'eqR'], boss: { name: 'フタゴノヌシ', sprite: '🎎' } },
-  { ch: 6, lv: 6, title: '第6章 不等式', forms: ['ineqSin', 'ineqCos', 'ineqR'], boss: { name: 'ハンゲツオウ', sprite: '🌘' } },
-  { ch: 7, lv: 7, title: '第7章 のこり2つ', forms: ['remSin', 'remCos', 'remTanG', 'remTan'], boss: { name: 'ソウカンオウ', sprite: '🔗' } },
-  { ch: 8, lv: 8, title: '第8章 はかる', forms: ['tree', 'eye', 'eyeMove', 'slope', 'depAng', 'depLen'], boss: { name: 'ハカリオウ', sprite: '🔭' } },
+  { ch: 1, lv: 1, title: '第1章 角の いち', forms: ['bridge', 'posA', 'posO', 'posR'], first: 'bridge', mab: { form: 'mabII1', name: 'ウツシエ', sprite: '🦚', tip: 'sin が 同じ 値に なる 角は θ と 180° − θ。鈍角の ほうを えらぶ' },
+    boss: { name: 'オオメグリ', sprite: '🌪️' } },
+  { ch: 2, lv: 2, title: '第2章 あたい', forms: ['valSin', 'valCos', 'valTan', 'coord'], mab: { form: 'mabII2', name: 'カエリミチ', sprite: '🦋', tip: '180° − θ の 形でも、点の 座標で 値を 読む' },
+    boss: { name: 'ザヒョウオウ', sprite: '🏯' } },
+  { ch: 3, lv: 3, title: '第3章 ＋ と −', forms: ['signAt', 'signQ', 'signAxis'], mab: { form: 'mabII3', name: 'ハンテンジン', sprite: '🃏', tip: 'θ が 鋭角なら 180° − θ は 鈍角。符号は その 角で 決まる' },
+    boss: { name: 'フゴウノカミ', sprite: '⚖️' } },
+  { ch: 4, lv: 4, title: '第4章 180° − θ・90° − θ', forms: ['sup', 'comp', 'formula'], mab: { form: 'mabII4', name: 'フタエカガミ', sprite: '💎', tip: '180° − θ で 鋭角に して から、90° − θ で sin と cos を 入れかえる' },
+    boss: { name: 'カガミオウ', sprite: '🏛️' } },
+  { ch: 5, lv: 5, title: '第5章 方程式', forms: ['eqSin', 'eqCos', 'eqTan', 'eqR'], mab: { form: 'mabII5', name: 'カタワレボシ', sprite: '🌠', tip: 'sin の 値から θ は 2つ。範囲に 入るのは どちらか 1つ' },
+    boss: { name: 'フタゴノヌシ', sprite: '🎎' } },
+  { ch: 6, lv: 6, title: '第6章 不等式', forms: ['ineqSin', 'ineqCos', 'ineqR'], mab: { form: 'mabII6', name: 'ニセヅキ', sprite: '🌑', tip: 'sin の 式では 弧が 2つに なる。解が 図の 弧 だけに なる 式を' },
+    boss: { name: 'ハンゲツオウ', sprite: '🌘' } },
+  { ch: 7, lv: 7, title: '第7章 のこり2つ', forms: ['remSin', 'remCos', 'remTanG', 'remTan'], mab: { form: 'mabII7', name: 'カゲボウシ', sprite: '🎩', tip: 'tan が 負 → 鈍角 → cos は 負、sin は 正' },
+    boss: { name: 'ソウカンオウ', sprite: '🔗' } },
+  { ch: 8, lv: 8, title: '第8章 はかる', forms: ['tree', 'eye', 'eyeMove', 'slope', 'depAng', 'depLen'], mab: { form: 'mabII8', name: 'メセンオニ', sprite: '👹', tip: '目の 高さが 変わると 仰角も 足す 高さも 変わる' },
+    boss: { name: 'ハカリオウ', sprite: '🔭' } },
   { ch: 9, final: true, title: 'さいごの 章', boss: { name: 'サンカクオウ', sprite: '🔺' } },
 ];
 // 記録の 版：印 なし ＝ 10/23 の 版（いまと 同じ 章の 番号）、2 ＝ 10/24 の 一時の 版（第1章 直角三角形 が あり、章が 1つ ずれて いた）、3 ＝ いま
@@ -626,6 +641,7 @@ function migrateZk(zk) {
 const NORM_CH = CHAPTERS.filter(c => !c.final);
 const FORM_LV = {};
 NORM_CH.forEach(c => c.forms.forEach(f => { FORM_LV[f] = c.lv; }));
+NORM_CH.forEach(c => { if (c.mab) FORM_LV[c.mab.form] = c.lv; });   // まぼろしの モンスター（3周目だけ）
 // モンスター図鑑：形ごとに 1匹 ＋ 中ボス ＋ さいごの ボス。一言は その 形の 判断の 要点
 const MONSTERS = [
   ['bridge', 'ツナギメ', '🌉', '斜辺 1 を 原点に 置くと、となりは x（cos）、向かいは y（sin）'],
@@ -660,6 +676,7 @@ const MONSTERS = [
   ['depAng', 'ミオロシ', '🦅', '俯角は 水平線から 下へ。錯角で 下の 角と 等しい'],
   ['depLen', 'ガケノウエ', '🏔️', '俯角を 錯角で 船の 角に うつして tan'],
 ].map(([id, name, sprite, tip]) => ({ id, ch: FORM_LV[id], name, sprite, tip }))
+  .concat(NORM_CH.filter(c => c.mab).map(c => ({ id: c.mab.form, ch: c.ch, name: c.mab.name, sprite: c.mab.sprite, tip: c.mab.tip, mab: true })))
   .concat(NORM_CH.map(c => ({ id: 'boss' + c.ch, ch: c.ch, name: c.boss.name, sprite: c.boss.sprite, tip: '中ボス：' + c.title.replace(/^第\d章 /, '') + 'を 問題集の ことばで', boss: true })))
   .concat([{ id: 'final', ch: CHAPTERS.length, name: CHAPTERS[CHAPTERS.length - 1].boss.name, sprite: CHAPTERS[CHAPTERS.length - 1].boss.sprite, tip: 'さいごの ボス：' + NORM_CH.length + 'つの 章を 問題集の ことばで', boss: true }]);
 const monsterOf = id => MONSTERS.find(m => m.id === id);
@@ -671,9 +688,12 @@ function zukanAfter(zk, e) {
   if (e.type === 'boss') z[e.id] = Math.max(cur, e.noMiss ? 2 : 1);
   return z;
 }
+// コンプは 3段階：ずかん コンプ（まぼろし いがいを 全部 ○）→ しんの コンプ（まぼろしも 全部 ○）→ かんぜん コンプ（全部 ◎）
 function zukanCount(zk) {
-  const got = MONSTERS.filter(m => (zk[m.id] || 0) >= 1).length, mas = MONSTERS.filter(m => (zk[m.id] || 0) >= 2).length;
-  return { got, mas, all: MONSTERS.length, comp: got === MONSTERS.length, perfect: mas === MONSTERS.length };
+  const v = m => zk[m.id] || 0, base = MONSTERS.filter(m => !m.mab), mabs = MONSTERS.filter(m => m.mab);
+  const got = MONSTERS.filter(m => v(m) >= 1).length, mas = MONSTERS.filter(m => v(m) >= 2).length;
+  return { got, mas, all: MONSTERS.length, mabGot: mabs.filter(m => v(m) >= 1).length, mabAll: mabs.length,
+    comp: base.every(m => v(m) >= 1), shin: MONSTERS.every(m => v(m) >= 1), perfect: MONSTERS.every(m => v(m) >= 2) };
 }
 
 // ---------- 問題を つくる ----------
@@ -688,6 +708,16 @@ const SIGN_AXIS = [['sin', 0], ['sin', 6], ['sin', 12], ['cos', 0], ['cos', 6], 
 const FN3 = ['sin', 'cos', 'tan'];
 const KATA = ['ア', 'イ', 'ウ', 'エ'];
 const GEN = {
+  // まぼろし（3周目）：章で いちばん 手ごわい 判断を 2つ 重ねる
+  mabII1: rng => { const a = pick(rng, [2, 3, 4]); return { mode: 'posO', u: 12 - a, sup: a }; },   // sin が 同じ ＋ 鈍角
+  mabII2: rng => { const fn = pick(rng, ['sin', 'cos']); return { mode: fn === 'sin' ? 'valSin' : 'valCos', fn, u: pick(rng, [8, 9, 10]), m180: true }; },   // 180° − θ ＋ 値
+  mabII3: rng => ({ mode: 'signQ', fn: pick(rng, FN3), q: pick(rng, ['acute', 'obtuse']), m180: true }),   // 180° − θ ＋ 符号
+  mabII4: rng => ({ mode: 'mabSC', fn: pick(rng, ['sin', 'cos']), u: pick(rng, [8, 10]) }),   // 180° − θ ＋ 90° − θ
+  mabII5: rng => ({ mode: 'eqSin', fn: 'sin', v: pick(rng, SIN_EQ), half: pick(rng, ['lo', 'hi']) }),   // θ は 2つ ＋ 範囲
+  mabII6: rng => { const s = rng() < 0.5 ? 1 : -1; return { mode: 'ineqR', fn: 'cos', v: V(s, pick(rng, [1, 2, 3])), s, strict: rng() < 0.5, mix: true }; },   // 弧 ＋ 式の 種類（短い ほうの 弧）
+  mabII7: rng => ({ mode: 'remTS', t: ri(rng, 0, 1), w: ri(rng, 0, 1), sg: -1 }),   // tan が 負 ＋ 2だんかい
+  mabII8: rng => ({ mode: 'eyeMove', k: 'f', d: 10, a: 2, e1: 1.5, e2: pick(rng, [0.5, 4.5]) }),   // 仰角 ＋ 目の 高さが 両方 変わる
+  remTS: rng => ({ t: ri(rng, 0, 1), w: ri(rng, 0, 1), sg: rng() < 0.5 ? 1 : -1 }),
   triPick: rng => { const fn = pick(rng, ['sin', 'cos', 'tan']); return Object.assign(TRI_ORIENT(rng), { w: ri(rng, 0, 1), num: SIDE[RATIO[fn][0]], den: SIDE[RATIO[fn][1]] }); },
   triSide: rng => Object.assign(TRI_ORIENT(rng), { w: ri(rng, 0, 1), ask: pick(rng, ['hyp', 'opp', 'adj']) }),
   triVal: rng => { const o = TRI_ORIENT(rng), t = ri(rng, 0, 1); return Object.assign(o, { t, w: t ? o.rot % 2 : ri(rng, 0, 1), fn: pick(rng, ['sin', 'cos', 'tan']) }); },   // 5-12-13 は 長い 辺を 横に（細長く ならないように）
@@ -724,7 +754,7 @@ const GEN = {
   depAng: rng => ({ ask: pick(rng, ['which', 'equal']), lab: shuffle(rng, KATA) }),   // lab：図の 4つの 角（俯角・がけ側・船の 角・その となり）に つける 名前
   depLen: rng => ({ h: pick(rng, [20, 30]), a: pick(rng, [2, 4]) }),
 };
-function genPrm(form, rng) { return Object.assign({ mode: form }, GEN[form](rng)); }
+function genPrm(form, rng) { const r = GEN[form](rng); return Object.assign({ mode: form }, r, r.mode ? { mf: form } : {}); }   // mf ＝ 図鑑の 形（まぼろし。f は 公式の 問題が 使う）
 
 // ---------- 4択の 選択肢 ----------
 // 正解と「判断が 1つだけ ちがう」ものを 先に、同じ 意味の ものは 1つだけ。たりなければ ほかの 値で うめる
@@ -733,6 +763,7 @@ function makeOptions(q, rng, boss) {
   const add = (text, key, types) => c.push({ text, key: String(key), types });
   const m = q.mode;
   let fixed = false;
+  if (m === 'remTS') { const { y, x, c: hh } = remLegs(q); add(frac(y, hh), 1, []); add(frac(x, hh), 2, ['swap']); add(frac(hh, y), 3, ['flip']); add(frac(-y, hh), 4, ['sign']); }
   if (m === 'triPick') {   // 比 オレンジの 辺/青の 辺 → sinθ・cosθ・tanθ と 正解の 逆数
     const right = Object.keys(RATIO).find(f => sideName(q.num) === RATIO[f][0] && sideName(q.den) === RATIO[f][1]);
     ['sin', 'cos', 'tan'].forEach(f => add(f + 'θ', f, f === right ? [] : ['ratio']));
@@ -784,6 +815,10 @@ function makeOptions(q, rng, boss) {
     const x = cosV(q.u), y = sinV(q.u), pt = (a, b, t) => { const s = '(' + vStr('cos', a) + ', ' + vStr('sin', b) + ')'; add(s, s, t); };
     pt(x, y, []); pt(y, x, ['swap']); pt(neg(x), y, ['sign']); pt(lenSwap(x), lenSwap(y), ['len']); pt(x, neg(y), ['sign']); pt(neg(x), neg(y), ['sign']);
   }
+  if (m === 'mabSC') {   // fn(u) を もう 1つの 関数で：180° − u で 鋭角 → 90° − の 形
+    const o = other(q.fn), sg = q.fn === 'sin' ? 1 : -1, ex = (s, a) => (s < 0 ? MINUS : '') + fnAt(o, a);
+    add(ex(sg, q.u - 6), 1, []); add(ex(-sg, q.u - 6), 2, ['sign']); add(ex(sg, 12 - q.u), 3, ['ang']); add(ex(-sg, 12 - q.u), 4, ['ang', 'sign']);
+  }
   if (m === 'signAt' || m === 'signQ' || m === 'signAxis') {   // ＋ − 0 の 3つ（並びは いつも おなじ）
     fixed = true;
     const fn = q.fn, u = signU(q), right = signOf(fn, u);
@@ -828,7 +863,12 @@ function makeOptions(q, rng, boss) {
     pool.sort((a, b) => a.pr - b.pr);
     for (const c of pool) { const k = c.T.join(','); if (used.includes(k)) continue; used.push(k); add(eqStr(c.f, c.w), k, c.ty); }
   }
-  if (m === 'ineqR') {
+  if (m === 'ineqR' && q.mix) {   // まぼろし：cos の 式が 正解、同じ はしの sin の 式（弧が 2つに なる）を はずれに
+    const u0 = cuts('cos', q.v)[0];
+    add(ineqStr('cos', q.v, q.s, q.strict), 'a', []); add(ineqStr('sin', sinV(u0), -1, q.strict), 's', ['only']);
+    add(ineqStr('cos', q.v, q.s, !q.strict), 'c', ['line']); add(ineqStr('cos', q.v, -q.s, q.strict), 'b', ['arc']);
+  }
+  else if (m === 'ineqR') {
     add(ineqStr(q.fn, q.v, q.s, q.strict), 'a', []);
     add(ineqStr(q.fn, q.v, -q.s, q.strict), 'b', ['arc']);
     add(ineqStr(q.fn, q.v, q.s, !q.strict), 'c', ['line']);
@@ -887,7 +927,7 @@ function makeOptions(q, rng, boss) {
   const opts = out.map(x => ({ text: x.text, key: x.key, types: x.types, correct: !x.types.length }));
   return fixed ? opts : shuffle(rng, opts);
 }
-function signU(q) { return q.mode === 'signQ' ? (q.q === 'acute' ? 3 : 9) : q.u; }
+function signU(q) { return q.mode === 'signQ' ? (q.m180 ? (q.q === 'acute' ? 9 : 3) : (q.q === 'acute' ? 3 : 9)) : q.u; }   // m180：180° − θ の 角
 function signOf(fn, u) { const v = valOf(fn, u); return v === NONE ? NaN : v.s; }
 function moveAns(mv) {   // 0：大きく、1：小さく、3：俯角
   const M = MOVES[mv], before = Math.atan2(TREE_H - 1.5, 10), after = Math.atan2(TREE_H - M.e, M.d);
@@ -899,6 +939,8 @@ function moveAns(mv) {   // 0：大きく、1：小さく、3：俯角
 function texts(q) {
   const m = q.mode;
   const L = {
+    mabSC: () => [['▼ 同じ 値は？', fnAt(q.fn, q.u) + ' を ' + other(q.fn) + ' で 表すと？'], [fnAt(q.fn, q.u) + ' を、' + other(q.fn) + ' を 使って 鋭角の 三角比で 表せ。']],
+    remTS: () => { const { y, x } = remLegs(q), g = 'tanθ ＝ ' + frac(q.sg * y, x), R = q.sg > 0 ? '0° ＜ θ ＜ 90°' : '90° ＜ θ ＜ 180°'; return [['▼ のこりの 値は？', g + '（' + R + '）の とき sinθ ＝ ？'], [R + ' で、' + g + ' の とき、sinθ の 値を 求めよ。']]; },
     triPick: () => [['▼ 2辺の 比は？', '比 {[O]|[B]} は どれ？'], ['図の 直角三角形で、太線の 2辺の 比 {[O]|[B]} を、角 θ の 三角比で 表せ。']],
     triSide: () => {
       const T = { hyp: ['斜辺は どれ？', '図の 直角三角形で、斜辺を 選べ。'], opp: ['θ の 向かいの 辺は どれ？', '図の 直角三角形で、角 θ の 対辺を 選べ。'],
@@ -913,16 +955,16 @@ function texts(q) {
       const w = q.ask === 'adj' ? 'となりの 辺' : '向かいの 辺';
       return [['▼ 単位円に 置く', '斜辺 1 の とき、' + A + ' の ' + w + 'の 長さは？'], ['図の 直角三角形で 斜辺の 長さが 1 の とき、角 ' + A + ' の ' + w + 'の 長さを 三角比で 表せ。']];
     },
-    posA: () => [['▼ 動径を えらべ', angStr(q.u) + ' の 動径を えらべ'], ['角 ' + angStr(q.u) + ' の 動径を 図示せよ。', '角 ' + angStr(q.u) + ' を 表す 動径を 選べ。']],
+    posA: () => q.sup ? [['▼ 動径を えらべ', 'sinθ ＝ sin ' + angStr(q.sup) + '、θ は 鈍角。θ の 動径を えらべ'], ['sinθ ＝ sin ' + angStr(q.sup) + ' を 満たす 鈍角 θ の 動径を 図示せよ。']] : [['▼ 動径を えらべ', angStr(q.u) + ' の 動径を えらべ'], ['角 ' + angStr(q.u) + ' の 動径を 図示せよ。', '角 ' + angStr(q.u) + ' を 表す 動径を 選べ。']],
     posR: () => [['▼ この 点の 角は？', '図の 点 P の 角 θ は？（' + RANGE + '）'], ['図の 点 P は、角 θ（' + RANGE + '）の 動径と 半円の 交点で ある。θ を 求めよ。']],
-    valSin: () => [['▼ あたいは？', fnAt(q.fn, q.u) + ' ＝ ？'], [fnAt(q.fn, q.u) + ' の 値を 求めよ。', '次の 値を 求めよ。　' + fnAt(q.fn, q.u)]],
+    valSin: () => q.m180 ? [['▼ あたいは？', q.fn + '(180° − ' + angStr(12 - q.u) + ') ＝ ？'], [q.fn + '(180° − ' + angStr(12 - q.u) + ') の 値を 求めよ。']] : [['▼ あたいは？', fnAt(q.fn, q.u) + ' ＝ ？'], [fnAt(q.fn, q.u) + ' の 値を 求めよ。', '次の 値を 求めよ。　' + fnAt(q.fn, q.u)]],
     coord: () => [['▼ この 点の 座標は？', '図の 点 P の 座標は？'], ['半径 1 の 半円の 上の 点 P が 図の 位置に ある。P の 座標を 求めよ。']],
     signAt: () => [['▼ ＋？ −？ 0？', fnAt(q.fn, q.u) + ' は ＋？ −？ 0？'], [fnAt(q.fn, q.u) + ' の 値は 正・負・0 の どれか。']],
-    signQ: () => [['▼ ＋？ −？ 0？', 'θ が ' + INFO[q.q] + 'の とき ' + q.fn + 'θ は ＋？ −？ 0？'], ['θ が ' + INFO[q.q] + 'の とき、' + q.fn + 'θ の 値は 正・負・0 の どれか。']],
+    signQ: () => q.m180 ? [['▼ ＋？ −？ 0？', 'θ が ' + INFO[q.q] + 'の とき ' + q.fn + '(180° − θ) は ＋？ −？ 0？'], ['θ が ' + INFO[q.q] + 'の とき、' + q.fn + '(180° − θ) の 値は 正・負・0 の どれか。']] : [['▼ ＋？ −？ 0？', 'θ が ' + INFO[q.q] + 'の とき ' + q.fn + 'θ は ＋？ −？ 0？'], ['θ が ' + INFO[q.q] + 'の とき、' + q.fn + 'θ の 値は 正・負・0 の どれか。']],
     sup: () => [['▼ 同じ 値は？', fnAt(q.fn, q.u) + ' と 同じ 値は？'], [fnAt(q.fn, q.u) + ' を 鋭角の 三角比で 表せ。']],
     comp: () => [['▼ 同じ 値は？', fnAt(q.fn, q.u) + ' と 同じ 値は？'], [fnAt(q.fn, q.u) + ' を ' + angStr(6 - q.u) + ' の 三角比で 表せ。']],
     formula: () => [['▼ 式を えらべ', FORMULA_L[q.f] + ' ＝ ？'], [FORMULA_L[q.f] + ' を θ の 三角比で 表せ。']],
-    eqSin: () => [['▼ 点を ぜんぶ えらべ', eqStr(q.fn, q.v) + ' と なる 点を ぜんぶ'], [RANGE + ' の とき、方程式 ' + eqStr(q.fn, q.v) + ' を 解け。', RANGE + ' の とき、次の 方程式を 解け。　' + eqStr(q.fn, q.v)]],
+    eqSin: () => q.half ? [['▼ 点を ぜんぶ えらべ', eqStr(q.fn, q.v) + '（' + HALF[q.half] + '）と なる 点を ぜんぶ'], [HALF[q.half] + ' の とき、方程式 ' + eqStr(q.fn, q.v) + ' を 解け。']] : [['▼ 点を ぜんぶ えらべ', eqStr(q.fn, q.v) + ' と なる 点を ぜんぶ'], [RANGE + ' の とき、方程式 ' + eqStr(q.fn, q.v) + ' を 解け。', RANGE + ' の とき、次の 方程式を 解け。　' + eqStr(q.fn, q.v)]],
     eqR: () => [['▼ 方程式を えらべ', RANGE + ' で、解が 図の 点 だけに なる 方程式は どれ？'], [RANGE + ' の とき、解が 図の 点に なる 方程式を 選べ。']],
     ineqSin: () => [['▼ 弧と ●○', ineqStr(q.fn, q.v, q.s, q.strict) + ' と なる 弧は？'], [RANGE + ' の とき、不等式 ' + ineqStr(q.fn, q.v, q.s, q.strict) + ' を 解け。', RANGE + ' の 範囲で、' + ineqStr(q.fn, q.v, q.s, q.strict) + ' を 満たす θ の 値の 範囲を 求めよ。']],
     ineqR: () => [['▼ 不等式を えらべ', RANGE + ' で、解が 図の 弧に なる 不等式は どれ？（● は ふくむ、○ は ふくまない）'], [RANGE + ' の とき、解が 図の 弧に なる 不等式を 選べ。（● は ふくむ、○ は ふくまない）']],
@@ -983,6 +1025,11 @@ const QTXT = { acute: '鋭角（0° ＜ θ ＜ 90°）は x も y も 正', obtu
 function reasonLines(q) {
   const m = q.mode, L = [];
   const push = s => { if (s) L.push(s); };
+  if (m === 'remTS') {
+    const { y, x, c } = remLegs(q);
+    L.push('1 ＋ tan²θ ＝ {1|cos²θ} → cosθ ＝ ' + frac(q.sg * x, c) + '（' + (q.sg > 0 ? '鋭角 → cos は 正' : 'tan が 負 → 鈍角 → cos は 負') + '）');
+    L.push('sinθ ＝ tanθ × cosθ ＝ ' + frac(y, c) + '（0° ＜ θ ＜ 180° で sin は 正）');
+  }
   if (m === 'triPick') {
     const n = sideName(q.num), d = sideName(q.den), f = Object.keys(RATIO).find(k => RATIO[k][0] === n && RATIO[k][1] === d);
     L.push('オレンジは ' + SIDE_JP[n] + '、青は ' + SIDE_JP[d] + ' → {' + SIDE_JP[n].replace('の 辺', '') + '|' + SIDE_JP[d].replace('の 辺', '') + '} ＝ ' + f + 'θ');
@@ -1002,7 +1049,14 @@ function reasonLines(q) {
     L.push('斜辺が 1 → となりの 辺 ＝ cos ' + A + '、向かいの 辺 ＝ sin ' + A);
     L.push('原点に 置くと となりの 辺が x座標、向かいの 辺が y座標 → P(cos ' + A + ', sin ' + A + ')');
   }
+  if (q.sup) L.push('sin(180° − θ) ＝ sinθ → sin が sin ' + angStr(q.sup) + ' と 同じ 角は ' + angStr(q.sup) + ' と ' + angStr(12 - q.sup) + '。鈍角は ' + angStr(12 - q.sup));
   if (m === 'posA' || m === 'posO' || m === 'posR') { push(posLine(q.u)); push(auxLine(q.u)); }
+  if (q.m180 && m !== 'signQ') L.push('180° − ' + angStr(12 - q.u) + ' ＝ ' + angStr(q.u));
+  if (m === 'mabSC') {
+    const o = other(q.fn);
+    L.push(angStr(q.u) + ' ＝ 180° − ' + angStr(12 - q.u) + ' → ' + fnAt(q.fn, q.u) + ' ＝ ' + (q.fn === 'sin' ? '' : MINUS) + fnAt(q.fn, 12 - q.u));
+    L.push(angStr(12 - q.u) + ' ＝ 90° − ' + angStr(q.u - 6) + ' → sin と cos が 入れかわる → ' + makeOptionsCorrect(q));
+  }
   if (m === 'valSin' || m === 'valCos' || m === 'valTan' || m === 'coord') {
     L.push(angStr(q.u) + ' の 点は ' + coordStr(q.u));
     if (m === 'coord') L.push('x座標が cos、y座標が sin');
@@ -1012,7 +1066,8 @@ function reasonLines(q) {
   if (m === 'signAt' || m === 'signQ' || m === 'signAxis') {
     const u = signU(q), s = signOf(q.fn, u);
     L.push('cos は x座標、sin は y座標、tan は {y|x}');
-    if (m === 'signQ') L.push(QTXT[q.q]);
+    if (m === 'signQ' && q.m180) L.push('θ が ' + INFO[q.q] + ' → 180° − θ は ' + (q.q === 'acute' ? '鈍角' : '鋭角') + ' → ' + QTXT[q.q === 'acute' ? 'obtuse' : 'acute']);
+    else if (m === 'signQ') L.push(QTXT[q.q]);
     else if (m === 'signAt') L.push(angStr(q.u) + ' は ' + (q.u < 6 ? '鋭角' : '鈍角') + ' → ' + QTXT[q.u < 6 ? 'acute' : 'obtuse']);
     else L.push(angStr(q.u) + ' の 点は ' + coordStr(q.u) + '（軸の 上）');
     L.push('→ ' + (m === 'signQ' ? q.fn + 'θ' : fnAt(q.fn, q.u)) + ' は ' + SGN(s));
@@ -1035,11 +1090,12 @@ function reasonLines(q) {
     L.push('→ ' + FORMULA_L[q.f] + ' ＝ ' + makeOptionsCorrect(q));
   }
   if (m === 'eqSin' || m === 'eqCos' || m === 'eqTan') {
-    const S = solutions(q.fn, q.v);
-    if (q.fn === 'sin') L.push('y ＝ ' + vStr('sin', q.v) + ' の よこ線と 半円の 交点は ' + S.length + 'つ');
+    const Sall = solutions(q.fn, q.v), S = Sall.filter(u => inHalf(q, u));
+    if (q.fn === 'sin') L.push('y ＝ ' + vStr('sin', q.v) + ' の よこ線と 半円の 交点は ' + Sall.length + 'つ');
+    if (q.half) L.push('sin の 値からは θ が 2つ（' + Sall.map(angStr).join('、') + '）→ ' + HALF[q.half] + ' に 入るのは 1つ');
     if (q.fn === 'cos') L.push('x ＝ ' + vStr('cos', q.v) + ' の たて線と 半円の 交点は ' + S.length + 'つ');
     if (q.fn === 'tan') L.push(q.v.k === 0 ? 'tanθ ＝ 0 は y ＝ 0（x軸の 上）→ 0° と 180° の 2つ' : '傾き ' + vStr('tan', q.v) + ' の 直線（原点を 通る）と 半円の 交点は 1つ');
-    if (q.fn === 'sin' && S.length === 2 && q.v.k) L.push('sin の 値からは θ が 2つ（鋭角と 鈍角）');
+    if (q.fn === 'sin' && !q.half && S.length === 2 && q.v.k) L.push('sin の 値からは θ が 2つ（鋭角と 鈍角）');
     if (q.fn === 'sin' && q.v.k === 4) L.push('sinθ ＝ 1 は 90° の 1つだけ');
     if (q.fn === 'cos') L.push('cos の 値からは θ は 1つに 決まる');
     if (q.fn === 'tan' && q.v.k) L.push('tan の 値からは θ は 1つに 決まる');
@@ -1052,6 +1108,7 @@ function reasonLines(q) {
     L.push('≦ ≧ は イコール あり → ●、＜ ＞ は イコール なし → ○');
   }
   if (m === 'eqR') { const S = solutions(q.fn, q.v); L.push('図の 点は θ ＝ ' + S.map(angStr).join('、') + '（' + S.length + 'つ）→ 解が ちょうど この ' + S.length + 'つに なるのは ' + eqStr(q.fn, q.v)); L.push('sin の 値からは θ が 2つ（鋭角と 鈍角）、cos・tan の 値からは 1つ'); }
+  if (m === 'ineqR' && q.mix) L.push('sin の 式だと 両がわの 2つの 弧に なる → 図の 弧 だけに なるのは cos の 式');
   if (m === 'ineqR') L.push('図の 弧は ' + rangeStr(q.fn, q.v, arcAns(q.fn, q.v, q.s), q.strict) + ' → ' + ineqStr(q.fn, q.v, q.s, q.strict));
   if (m === 'remSin') {
     const { y, x, c } = remLegs(q);
@@ -1099,12 +1156,12 @@ function reasonLines(q) {
 function makeOptionsCorrect(q) { return makeOptions(q, () => 0, false).find(o => o.correct).text; }
 
 function build(prm, rng, opt = {}) {
-  const q = prm, lv = FORM_LV[q.mode];
-  const p = { lv, kind: REV.includes(q.mode) ? 'rev' : 'fwd', prm, mode: q.mode, form: q.mode };
+  const q = prm, form = q.mf || q.mode, lv = FORM_LV[form];
+  const p = { lv, kind: REV.includes(q.mode) ? 'rev' : 'fwd', prm, mode: q.mode, form };
   if (!TAP.includes(q.mode)) p.options = makeOptions(q, rng, !!opt.boss);
   if (q.mode === 'triSide') p.answer = { side: q.ask };
   if (q.mode === 'posA' || q.mode === 'posO') p.answer = { pts: [q.u] };
-  if (q.mode === 'eqSin' || q.mode === 'eqCos' || q.mode === 'eqTan') p.answer = { pts: solutions(q.fn, q.v) };
+  if (q.mode === 'eqSin' || q.mode === 'eqCos' || q.mode === 'eqTan') p.answer = { pts: solutions(q.fn, q.v).filter(u => inHalf(q, u)) };   // 範囲つき（まぼろし）は その 範囲だけ
   if (q.mode === 'ineqSin' || q.mode === 'ineqCos') p.answer = { arcs: arcAns(q.fn, q.v, q.s), strict: q.strict };
   const [short, exam] = texts(q);
   [p.label, p.display] = short;
@@ -1113,7 +1170,7 @@ function build(prm, rng, opt = {}) {
     p.label = '▼ 問題集の ことばで';
     p.display = exam[Math.floor(rng() * exam.length)];
     p.exam = true;
-    p.shortText = short[1].startsWith('？') ? short[0].replace('▼ ', '') : short[1].length > 30 ? monsterOf(q.mode).name + 'の 問題' : short[1];
+    p.shortText = short[1].startsWith('？') ? short[0].replace('▼ ', '') : short[1].length > 30 ? monsterOf(form).name + 'の 問題' : short[1];
   }
   p.reason = reasonLines(q);
   if (p.exam) p.reason.push('この 問題は 第' + lv + '章の「' + p.shortText + '」と おなじ');
@@ -1143,6 +1200,7 @@ function classify(p, ans) {
   }
   if (A.pts) {
     const S = ans.pts, fn = q.fn;
+    if (q.half && sameSet(S, solutions(fn, q.v))) return { types: ['range'] };   // 範囲の 外の 点も えらんだ
     if (S.length > 0 && S.length < A.pts.length && S.every(x => A.pts.includes(x))) return { types: ['half'] };
     if (fn !== 'sin' && S.length > A.pts.length && A.pts.every(x => S.includes(x)) && S.every(x => A.pts.includes(x) || A.pts.includes(12 - x))) return { types: ['extra'] };
     if (fn !== 'tan' && sameSet(S, solutions(other(fn), q.v))) return { types: ['swap'] };
@@ -1159,6 +1217,7 @@ function classify(p, ans) {
   return { types: t };
 }
 const TYPE_TEXT = {
+  range: '範囲の 外の 点も えらんだ（sin の 値から θ は 2つ、範囲に 入るのは 1つ）', ang: 'もとに する 角が ちがう',
   only: 'その 式は 解が 図の 点 より 多い（sin の 値からは θ が 2つ）', part: 'その 式の 解は 図の 点の 一部 だけ',
   ratio: 'どの 辺と どの 辺の 比か が ちがう（sinθ ＝ {向かい|斜辺}、cosθ ＝ {となり|斜辺}、tanθ ＝ {向かい|となり}）', flip: '分母と 分子が 逆',
   hyp: '斜辺は 直角の 向かいの いちばん 長い 辺', oppAdj: '向かいの 辺は θ に ふれない 辺、となりの 辺は θ と 直角を むすぶ 辺',
@@ -1180,6 +1239,7 @@ const TYPE_TEXT = {
   scatter: 'えらびかたが ばらばら',
 };
 const MASTER_TEXT = {
+  range: 'θ の 範囲',
   only: '解の 数', part: '解の 数',
   ratio: 'sin・cos・tan の 辺', flip: '分母と 分子', hyp: '斜辺', oppAdj: '向かいと となり', tanMix: '座標と cos・sin', hyp1: '斜辺 1',
   mirror: '角の はかりかた', ref: '30° と 60°', k45: '45° の 点', swap: 'sin と cos', sign: '＋ と −', len: '1/2 と √3/2', inv: 'tan ＝ {y|x}', ycoord: 'tan ＝ {y|x}',
@@ -1230,7 +1290,13 @@ function damage(p, L, ev, rng, combo = 0) {
 // 各章：ザコ（形ごとに 1体ずつ。第1章は 色の 2辺の 形を 4体、角の いちは つなぎから）→ 中ボス（その 章の 形を 問題集の ことばで）。さいごの 章は 9つの 章を 1問ずつ
 // 第1章（1周目）：はじめは 名前つき・基本の 向き（直角 右下・θ 左下）で ヘンサガシ → イロワケ → イロワケ（名前つき、向きは いろいろ）。そのあと 名前なし
 const INTRO = [{ form: 'triSide', intro: true, basic: true }, { form: 'triPick', intro: true, basic: true }, { form: 'triPick', intro: true }];
+// 3周目は ザコの 中に まぼろしを 1回 入れる（2体目 いこうの どこか）
 function makeSlots(ch, rng, opt = {}) {
+  const s = makeSlots0(ch, rng, opt), C = CHAPTERS[ch - 1];
+  if (opt.mab && C.mab && !C.final) { const n = s.filter(x => !x.boss).length; s.splice(1 + Math.floor(rng() * n), 0, { lv: C.lv, form: C.mab.form, mab: true }); }
+  return s;
+}
+function makeSlots0(ch, rng, opt = {}) {
   const C = CHAPTERS[ch - 1];
   if (C.final) return shuffle(rng, NORM_CH.map(c => c.lv)).map(lv => ({ lv, boss: true }));
   if (C.intro && opt.intro) {
@@ -1270,6 +1336,7 @@ function makeProblem(slot, ctx, rng) {
   if (slot.intro && !target && slot.basic) prm = Object.assign({}, prm, { rot: 0, flip: 0 });   // 基本の 向き
   const p = build(prm, rng, { boss: !!slot.boss });
   if (slot.intro && !target) p.labels = true;   // 辺の 名前を 書いたまま（苦手の 出し直しは 名前なし）
+  if (slot.mab) { p.mab = true; p.label = '▼ まぼろしの 問題'; }
   p.target = { lv: target };
   p.key = JSON.stringify(prm);
   ctx.recent.push(p.key);
@@ -1328,7 +1395,7 @@ const state = {
 };
 const chap = () => C.CHAPTERS[state.ch - 1];
 const zakoOf = c => c.zako || c.forms;
-const nNormal = () => (chap().final ? 0 : zakoOf(chap()).length);
+const nNormal = () => (chap().final ? 0 : state.nZako);   // まぼろしが 入ると 1体 ふえる
 const atBoss = () => state.slotIdx >= nNormal();
 const bossId = () => (chap().final ? 'final' : 'boss' + chap().ch);
 // 式の 文字を TeX 風の HTML に する。stacked の ときは a/b を 上下に 積む。√ の 中身には 上に 線
@@ -1367,7 +1434,7 @@ function zkEvent(e, lines) {   // 図鑑に 印を つけて、あたらしく �
   if (!before[e.id] && after[e.id]) lines.push('📖 ずかんに「' + m.name + '」が のった！' + (after[e.id] >= 2 ? '（◎）' : ''));
   else if ((before[e.id] || 0) < 2 && after[e.id] >= 2) lines.push('📖「' + m.name + '」が ◎ に なった！');
 }
-function compText(zk) { const k = C.zukanCount(zk); return k.perfect ? '👑 かんぜん コンプ' : k.comp ? '👑 ずかん コンプ！' : ''; }
+function compText(zk) { const k = C.zukanCount(zk); return k.perfect ? '👑 かんぜん コンプ' : k.shin ? '👑 しんの コンプ' : k.comp ? '👑 ずかん コンプ！' : ''; }
 function renderTitleComp() { const t = compText(loadZk()); $('compTitle').textContent = t; $('compTitle').classList.toggle('hidden', !t); }
 
 // ---------- 表示 ----------
@@ -1385,11 +1452,20 @@ function renderStatus() {
     $('progressDisplay').textContent = 'れんしゅう ' + (state.tut.i + 1) + '/' + TUT.length;
   }
 }
+// まぼろしの モンスター：特別な 演出
+function appear() {
+  if (p() && p().mab && !state.tut) { mabWarn(); return 'まぼろしの ' + enemyNow().name + 'が あらわれた！'; }
+  return enemyNow().name + 'が　あらわれた！';
+}
+function mabWarn() {
+  const el = document.createElement('div'); el.className = 'boss-warn mab'; el.textContent = '✨ まぼろし ✨';
+  gameEl.appendChild(el); setTimeout(() => el.remove(), 2000); flashScreen(); setTimeout(flashScreen, 200);
+}
 function enemyNow() { const c = chap(); return atBoss() ? c.boss : C.monsterOf(p() ? p().form : c.forms[0]); }
 function renderEnemy() {
   const c = chap(), boss = atBoss() && !state.tut, e = state.tut ? { name: 'まと', sprite: '🎯' } : enemyNow();
   monsterEl.textContent = e.sprite;
-  monsterEl.className = boss ? 'boss' : '';
+  monsterEl.className = boss ? 'boss' : p() && p().mab && !state.tut ? 'mab' : '';
   $('monsterName').textContent = e.name;
   gameEl.classList.toggle('boss-mid', boss && !c.final);
   gameEl.classList.toggle('boss-final', boss && !!c.final);
@@ -1620,6 +1696,8 @@ function drawProblem(ctx, g, q) {
   }
   if (state.tut && state.tut.hintSeg && !rev) coordSeg(ctx, g, m.u, m.fn, true);
   if (m.mode === 'coord') coordSeg(ctx, g, m.u, null);
+  if (m.mode === 'mabSC') { radius(ctx, g, m.u, '#fff', 2); pointP(ctx, g, Math.cos(ang(m.u)), Math.sin(ang(m.u)), '#fff', C.angStr(m.u)); if (rev) { radius(ctx, g, 12 - m.u, CYAN, 2); pointP(ctx, g, Math.cos(ang(12 - m.u)), Math.sin(ang(12 - m.u)), CYAN, C.angStr(12 - m.u)); } }
+  if (m.half) quarter(ctx, g, m.half === 'lo' ? -1 : 1, 'rgba(120,120,120,0.45)');   // 範囲の 外を うすく
   if (m.mode === 'sup' || m.mode === 'comp') {   // θ の 点と 180° − θ（90° − θ）の 点
     const b = m.mode === 'sup' ? 12 - m.u : 6 - m.u;
     radius(ctx, g, m.u, '#fff', 2); radius(ctx, g, b, 'rgba(127,232,255,0.8)', 2);
@@ -1660,7 +1738,7 @@ function drawRem(ctx, g, q) {
     if (m.info !== 'acute') pts.push([-L.x / c, L.y / c]);
   }
   if (m.mode === 'remCos') { vLine(ctx, g, m.sg * L.x / c, CYAN); cap(ctx, g, 'たて線 x ＝ ' + (m.sg < 0 ? '−' : '') + L.x + '/' + c, CYAN); pts.push([m.sg * L.x / c, L.y / c]); }
-  if (m.mode === 'remTanG') { slopeLine(ctx, g, m.sg * L.y / L.x, CYAN); cap(ctx, g, '傾き ' + (m.sg < 0 ? '−' : '') + L.y + '/' + L.x, CYAN); pts.push([m.sg * L.x / c, L.y / c]); }
+  if (m.mode === 'remTanG' || m.mode === 'remTS') { slopeLine(ctx, g, m.sg * L.y / L.x, CYAN); cap(ctx, g, '傾き ' + (m.sg < 0 ? '−' : '') + L.y + '/' + L.x, CYAN); pts.push([m.sg * L.x / c, L.y / c]); }
   if (m.mode === 'remTan') {
     const s = m.info === 'obtuse' ? -1 : 1, x = s * L.x / c, y = L.y / c;
     seg(ctx, g, g.cx, g.cy, X(g, x), Y(g, y), '#fff', 2);
@@ -1974,7 +2052,8 @@ function startChapter(ch) {
   state.ch = ch;
   const c = chap();
   const pr0 = loadProg(), intro = pr0.lap === 1;   // 1周目だけ はじめは 見せる
-  state.slots = C.makeSlots(ch, rng, { intro });
+  state.slots = C.makeSlots(ch, rng, { intro, mab: pr0.lap === 3 });   // 3周目だけ まぼろし
+  state.nZako = state.slots.filter(s => !s.boss).length; state.mabMiss = false;
   state.slotIdx = 0; state.combo = 0; state.bossMiss = false;
   state.hp = state.maxHp = c.final ? C.finalHP(heroLV()) : C.zakoHP(heroLV());
   state.lives = MAX_LIVES;
@@ -1982,7 +2061,7 @@ function startChapter(ch) {
   newProblem();
   if (c.final) bossWarn(true);
   if (c.intro && intro) { $('defClose').textContent = '▶ たたかう'; $('defScreen').classList.remove('hidden'); $('defScreen').scrollTop = 0; }   // 第1章の まえに 定義を 見せる
-  setMessage((c.final ? c.boss.name + 'が あらわれた！\nここからは 問題集の ことばで 出るぞ！' : c.title + '\n' + enemyNow().name + 'が　あらわれた！') + '\n' + hint());
+  setMessage((c.final ? c.boss.name + 'が あらわれた！\nここからは 問題集の ことばで 出るぞ！' : c.title + '\n' + appear()) + '\n' + hint());
 }
 function answerNow() {
   const q = p();
@@ -2021,7 +2100,7 @@ function onCorrect(ev) {
   if (ev.mastered.length) zkEvent({ type: 'master', id: q.form }, lines);
   if (hold) lines.push(e.name + '「まだ たおれぬ！」');
   if (stay) lines.push(e.name + '「にがてを こくふく するまで たおれぬ！」');
-  if (state.hp <= 0) zkEvent(boss ? { type: 'boss', id: bossId(), noMiss: !state.bossMiss } : { type: 'kill', id: q.form }, lines);
+  if (state.hp <= 0) zkEvent(boss ? { type: 'boss', id: bossId(), noMiss: !state.bossMiss } : q.mab ? { type: 'boss', id: q.form, noMiss: !state.mabMiss } : { type: 'kill', id: q.form }, lines);   // まぼろしの ◎ は ノーミス
   setMessage(lines.join('\n'));
   if (hit.crit) { const el = document.createElement('div'); el.className = 'level-up crit'; el.textContent = 'かいしんの いちげき！'; gameEl.appendChild(el); setTimeout(() => el.remove(), 1500); }
   const wait = (hit.crit ? 1500 : 1000) + (lines.some(l => l.startsWith('📖')) ? 400 : 0);
@@ -2047,7 +2126,7 @@ function afterDefeat() {
   }
   state.hp = state.maxHp = C.zakoHP(L);
   newProblem();
-  setMessage(enemyNow().name + 'が　あらわれた！\n' + hint());
+  setMessage(appear() + '\n' + hint());
 }
 // ---------- 周回の きろく（単位円クエストと おなじ） ----------
 const MAX_LAP = 3;
@@ -2093,14 +2172,15 @@ function showMap() {
 function showZukan() {
   const zk = loadZk(), k = C.zukanCount(zk);
   let html = '', last = 0;
-  C.MONSTERS.slice().sort((a, b) => a.ch - b.ch || (a.boss ? 1 : 0) - (b.boss ? 1 : 0)).forEach(m => {
+  C.MONSTERS.slice().sort((a, b) => a.ch - b.ch || (a.boss ? 2 : a.mab ? 1 : 0) - (b.boss ? 2 : b.mab ? 1 : 0)).forEach(m => {
     if (m.ch !== last) { html += '<div class="zch">' + C.CHAPTERS[m.ch - 1].title + '</div>'; last = m.ch; }
     const v = zk[m.id] || 0;
-    if (!v) { html += '<div class="zi lock" data-id="' + m.id + '"><span class="mk">・</span><span class="sp">？</span><span class="nm">？？？</span><span class="tip">' + (m.boss ? 'まだ たおして いない ボス' : 'まだ たおして いない') + '</span></div>'; return; }
-    html += '<div class="zi ' + (v >= 2 ? 'master' : 'got') + '" data-id="' + m.id + '"><span class="mk">' + (v >= 2 ? '◎' : '○') + '</span><span class="sp">' + m.sprite + '</span><span class="nm">' + m.name + (m.boss ? '（ボス）' : '') + '</span><span class="tip">' + mathHTML(m.tip, false) + '</span></div>';
+    const mz = m.mab ? ' mabz' : '';   // まぼろしは 金の わく
+    if (!v) { html += '<div class="zi lock' + mz + '" data-id="' + m.id + '"><span class="mk">・</span><span class="sp">？</span><span class="nm">？？？' + (m.mab ? '（3しゅうめに あらわれる）' : '') + '</span><span class="tip">' + (m.mab ? 'まぼろしの モンスター' : m.boss ? 'まだ たおして いない ボス' : 'まだ たおして いない') + '</span></div>'; return; }
+    html += '<div class="zi ' + (v >= 2 ? 'master' : 'got') + mz + '" data-id="' + m.id + '"><span class="mk">' + (v >= 2 ? '◎' : '○') + '</span><span class="sp">' + m.sprite + '</span><span class="nm">' + (m.mab ? 'まぼろしの ' : '') + m.name + (m.boss ? '（ボス）' : '') + '</span><span class="tip">' + mathHTML(m.tip, false) + '</span></div>';
   });
   $('zukanList').innerHTML = html;
-  $('zukanCount').textContent = 'たおした ' + k.got + '/' + k.all + '　◎ ' + k.mas + '/' + k.all;
+  $('zukanCount').textContent = 'たおした ' + k.got + '/' + k.all + '　◎ ' + k.mas + '/' + k.all + '　まぼろし ' + k.mabGot + '/' + k.mabAll;
   $('zukanComp').textContent = compText(zk); $('zukanComp').classList.toggle('hidden', !compText(zk));
   $('mapScreen').classList.add('hidden'); $('zukanScreen').classList.remove('hidden'); $('zukanScreen').scrollTop = 0;
 }
@@ -2146,6 +2226,7 @@ function onWrong(cls) {
   const q = p();
   state.combo = 0;
   if (atBoss()) state.bossMiss = true;
+  if (q.mab) state.mabMiss = true;
   state.lives -= 1; state.phase = 'next'; state.reveal = true; state.view = 'ans';
   draw(); renderControls(); renderStatus();
   monsterAnim('miss-dmg'); showDamage('MISS', '#ff4444');
